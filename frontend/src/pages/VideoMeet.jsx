@@ -45,7 +45,12 @@ export default class VideoMeet extends Component {
             messages: [],
             newMessages: 0,
             username: localStorage.getItem("username") || "Amandeep Verma",
-            videos: []
+            activeStyles: {
+                bold: false,
+                italic: false,
+                underline: false,
+                strikeThrough: false
+            }
         }
     }
 
@@ -59,21 +64,32 @@ export default class VideoMeet extends Component {
         });
     }
 
-    // Professional style application that prevents losing focus
+    updateToolbarStates = () => {
+        this.setState({
+            activeStyles: {
+                bold: document.queryCommandState('bold'),
+                italic: document.queryCommandState('italic'),
+                underline: document.queryCommandState('underline'),
+                strikeThrough: document.queryCommandState('strikeThrough')
+            }
+        });
+    }
+
     applyStyle = (e, command) => {
-        e.preventDefault(); // CRITICAL: Prevents the button from stealing focus
+        e.preventDefault();
         document.execCommand(command, false, null);
+        this.updateToolbarStates();
         if (this.editorRef.current) this.editorRef.current.focus();
     }
 
     sendMessage = () => {
         if (!this.editorRef.current) return;
         const content = this.editorRef.current.innerHTML;
-        // Basic cleanup of empty content
         if (content.trim() === "" || content === "<br>" || content === "<div><br></div>") return;
         
         socket.emit('chat-message', content, this.state.username);
         this.editorRef.current.innerHTML = "";
+        this.updateToolbarStates();
     }
 
     render() {
@@ -118,16 +134,16 @@ export default class VideoMeet extends Component {
                                 <div className="whoCanSee"><GroupIcon /> <span>Who can see your messages?</span></div>
                                 <div className="inputBoxWrapper richTextActive">
                                     <div className="richTextToolbar">
-                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'bold')}>B</div>
-                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'italic')}><i>I</i></div>
-                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'underline')}><u>U</u></div>
-                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'strikeThrough')}><s>S</s></div>
+                                        <div className={`toolBtn ${this.state.activeStyles.bold ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'bold')}>B</div>
+                                        <div className={`toolBtn ${this.state.activeStyles.italic ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'italic')}><i>I</i></div>
+                                        <div className={`toolBtn ${this.state.activeStyles.underline ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'underline')}><u>U</u></div>
+                                        <div className={`toolBtn ${this.state.activeStyles.strikeThrough ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'strikeThrough')}><s>S</s></div>
                                         <span className="vDivider"></span>
-                                        <FormatColorTextIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'foreColor')} />
-                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'fontSize')}>Aa</div>
-                                        <LinkIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'createLink')} />
+                                        <FormatColorTextIcon className="toolIcon" />
+                                        <div className="toolBtn">Aa</div>
+                                        <LinkIcon className="toolIcon" />
                                         <span className="vDivider"></span>
-                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'formatBlock')}>Hn</div>
+                                        <div className="toolBtn">Hn</div>
                                         <FormatListBulletedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertUnorderedList')} />
                                         <FormatListNumberedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertOrderedList')} />
                                         <MoreHorizIcon className="toolIcon" />
@@ -138,6 +154,8 @@ export default class VideoMeet extends Component {
                                         className="chatRichEditor"
                                         contentEditable="true"
                                         ref={this.editorRef}
+                                        onKeyUp={this.updateToolbarStates}
+                                        onMouseUp={this.updateToolbarStates}
                                         onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), this.sendMessage())}
                                         placeholder="Type message here ..."
                                     ></div>
