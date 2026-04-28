@@ -988,7 +988,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   outline: none;
   font-family: inherit;
   font-size: 0.95rem;
-  min-height: 140px;
+  min-height: 80px; /* Reduced from 140px for a more compact look */
   max-height: 300px;
   color: #000000;
   padding: 10px 0;
@@ -996,6 +996,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   overflow-y: auto;
   line-height: 1.4;
 }
+
 
 .chatRichEditor:empty:before {
   content: attr(placeholder);
