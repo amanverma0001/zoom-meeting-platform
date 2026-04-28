@@ -53,16 +53,15 @@ export default class VideoMeet extends Component {
         socket.off('chat-message');
         socket.on('chat-message', (data, sender) => {
             this.setState(prevState => ({
-                messages: [{ 
-                    "sender": sender === this.state.username ? "Me" : sender, 
-                    "html": data 
-                }, ...prevState.messages],
+                messages: [{ "sender": sender === this.state.username ? "Me" : sender, "html": data }, ...prevState.messages],
                 newMessages: prevState.showChat ? 0 : prevState.newMessages + 1
             }));
         });
     }
 
-    applyStyle = (command) => {
+    // Professional style application that prevents losing focus
+    applyStyle = (e, command) => {
+        e.preventDefault(); // CRITICAL: Prevents the button from stealing focus
         document.execCommand(command, false, null);
         if (this.editorRef.current) this.editorRef.current.focus();
     }
@@ -70,7 +69,8 @@ export default class VideoMeet extends Component {
     sendMessage = () => {
         if (!this.editorRef.current) return;
         const content = this.editorRef.current.innerHTML;
-        if (content.trim() === "" || content === "<br>") return;
+        // Basic cleanup of empty content
+        if (content.trim() === "" || content === "<br>" || content === "<div><br></div>") return;
         
         socket.emit('chat-message', content, this.state.username);
         this.editorRef.current.innerHTML = "";
@@ -118,23 +118,22 @@ export default class VideoMeet extends Component {
                                 <div className="whoCanSee"><GroupIcon /> <span>Who can see your messages?</span></div>
                                 <div className="inputBoxWrapper richTextActive">
                                     <div className="richTextToolbar">
-                                        <div className="toolBtn" onClick={() => this.applyStyle('bold')}>B</div>
-                                        <div className="toolBtn" onClick={() => this.applyStyle('italic')}><i>I</i></div>
-                                        <div className="toolBtn" onClick={() => this.applyStyle('underline')}><u>U</u></div>
-                                        <div className="toolBtn" onClick={() => this.applyStyle('strikeThrough')}><s>S</s></div>
+                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'bold')}>B</div>
+                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'italic')}><i>I</i></div>
+                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'underline')}><u>U</u></div>
+                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'strikeThrough')}><s>S</s></div>
                                         <span className="vDivider"></span>
-                                        <FormatColorTextIcon className="toolIcon" onClick={() => this.applyStyle('foreColor')} />
-                                        <div className="toolBtn" onClick={() => this.applyStyle('fontSize')}>Aa</div>
-                                        <LinkIcon className="toolIcon" onClick={() => this.applyStyle('createLink')} />
+                                        <FormatColorTextIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'foreColor')} />
+                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'fontSize')}>Aa</div>
+                                        <LinkIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'createLink')} />
                                         <span className="vDivider"></span>
-                                        <div className="toolBtn" onClick={() => this.applyStyle('formatBlock')}>Hn</div>
-                                        <FormatListBulletedIcon className="toolIcon" onClick={() => this.applyStyle('insertUnorderedList')} />
-                                        <FormatListNumberedIcon className="toolIcon" onClick={() => this.applyStyle('insertOrderedList')} />
+                                        <div className="toolBtn" onMouseDown={(e) => this.applyStyle(e, 'formatBlock')}>Hn</div>
+                                        <FormatListBulletedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertUnorderedList')} />
+                                        <FormatListNumberedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertOrderedList')} />
                                         <MoreHorizIcon className="toolIcon" />
                                     </div>
                                     <div className="toPill"><span>to:</span><div className="bluePill">Meeting Group Chat</div></div>
                                     
-                                    {/* Professional Content-Editable Editor */}
                                     <div 
                                         className="chatRichEditor"
                                         contentEditable="true"
