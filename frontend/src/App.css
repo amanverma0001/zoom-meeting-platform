@@ -1229,19 +1229,25 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .linkPickerSubMenu {
   position: absolute;
   bottom: calc(100% + 12px);
-  left: 0;
+  right: 0; /* Changed to grow inwards, preventing the shift */
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  padding: 6px 12px; /* Precise padding from SS */
+  padding: 6px 12px;
   min-width: 340px;
   z-index: 1000;
   display: flex;
   align-items: center;
   gap: 12px;
-  animation: slideUp 0.2s ease-out;
+  animation: slideInMenu 0.2s ease-out;
 }
+
+@keyframes slideInMenu {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 
 .innerLinkIcon {
   color: #747487 !important;
