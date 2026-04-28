@@ -49,6 +49,8 @@ export default class VideoMeet extends Component {
             localStream: null,
             showFontSizeMenu: false,
             showColorMenu: false,
+            showLinkMenu: false,
+            linkUrl: '',
             showParticipants: false,
             messages: [],
             newMessages: 0,
@@ -89,8 +91,8 @@ export default class VideoMeet extends Component {
     }
 
     handleOutsideClick = (e) => {
-        if (this.state.showFontSizeMenu || this.state.showColorMenu) {
-            this.setState({ showFontSizeMenu: false, showColorMenu: false });
+        if (this.state.showFontSizeMenu || this.state.showColorMenu || this.state.showLinkMenu) {
+            this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false });
         }
     }
 
@@ -151,9 +153,18 @@ export default class VideoMeet extends Component {
         document.execCommand(command, false, value);
         this.updateToolbarStates();
         if (this.editorRef.current) this.editorRef.current.focus();
-        if (command === 'fontSize' || command === 'foreColor' || command === 'hiliteColor' || command === 'removeFormat') {
-            this.setState({ showFontSizeMenu: false, showColorMenu: false });
-        }
+        this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false });
+    }
+
+    addLink = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.state.linkUrl.trim() === "") return;
+        let url = this.state.linkUrl;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) { url = 'https://' + url; }
+        document.execCommand('createLink', false, url);
+        this.setState({ showLinkMenu: false, linkUrl: '' });
+        if (this.editorRef.current) this.editorRef.current.focus();
     }
 
     sendMessage = () => {
@@ -171,7 +182,6 @@ export default class VideoMeet extends Component {
     render() {
         const colors = ['#FF1744', '#FF9100', '#FFD600', '#00E676', '#2979FF', '#D500F9', '#FF4081', '#000000'];
         const bgColors = ['#FF5252', '#FFAB40', '#FFFF00', '#69F0AE', '#448AFF', '#E040FB', '#FF80AB', '#FFFFFF'];
-
 
         return (
             <div className="meetViewPage">
@@ -276,7 +286,24 @@ export default class VideoMeet extends Component {
                                             )}
                                         </div>
 
-                                        <LinkIcon className="toolIcon" />
+                                        <div className="toolBtn relativePos" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); this.setState({ showLinkMenu: !this.state.showLinkMenu }); }}>
+                                            <LinkIcon className="bigToolIcon" />
+                                            {this.state.showLinkMenu && (
+                                                <div className="linkPickerSubMenu" onMouseDown={(e) => e.stopPropagation()}>
+                                                    <LinkIcon className="innerLinkIcon" />
+                                                    <input 
+                                                        type="text" 
+                                                        className="linkInput" 
+                                                        placeholder="Type or paste link" 
+                                                        value={this.state.linkUrl}
+                                                        onChange={(e) => this.setState({ linkUrl: e.target.value })}
+                                                        autoFocus
+                                                    />
+                                                    <Button className="confirmLinkBtn" onMouseDown={this.addLink}>Confirm</Button>
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <span className="vDivider"></span>
                                         <div className="toolBtn">Hn</div>
                                         <FormatListBulletedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertUnorderedList')} />

@@ -1226,9 +1226,61 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   width: 100% !important;
 }
 
-.clearFormatBtn:hover {
-  background-color: #f8f9fa !important;
+.linkPickerSubMenu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  padding: 8px 12px;
+  min-width: 320px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideUp 0.2s ease-out;
 }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-10%, 10px); }
+  to { opacity: 1; transform: translate(0, 0); }
+}
+
+.innerLinkIcon {
+  color: #747487 !important;
+  font-size: 1.2rem !important;
+}
+
+.linkInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  padding: 4px 0;
+}
+
+.linkInput::placeholder {
+  color: #999;
+}
+
+.confirmLinkBtn {
+  text-transform: none !important;
+  background-color: #e0e0e0 !important;
+  color: #747487 !important;
+  border-radius: 8px !important;
+  padding: 4px 16px !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+}
+
+.confirmLinkBtn:hover {
+  background-color: #0056d6 !important;
+  color: #ffffff !important;
+}
+
 
 
 .pencilBox {
