@@ -48,6 +48,7 @@ export default class VideoMeet extends Component {
             rel: null, 
             localStream: null,
             showFontSizeMenu: false,
+            showColorMenu: false,
             showParticipants: false,
             messages: [],
             newMessages: 0,
@@ -88,8 +89,8 @@ export default class VideoMeet extends Component {
     }
 
     handleOutsideClick = (e) => {
-        if (this.state.showFontSizeMenu) {
-            this.setState({ showFontSizeMenu: false });
+        if (this.state.showFontSizeMenu || this.state.showColorMenu) {
+            this.setState({ showFontSizeMenu: false, showColorMenu: false });
         }
     }
 
@@ -119,10 +120,7 @@ export default class VideoMeet extends Component {
     onMouseDown = (e) => {
         if (!this.state.isPoppedOut) return;
         if (e.button !== 0) return;
-        this.setState({
-            dragging: true,
-            rel: { x: e.pageX - this.state.chatPos.x, y: e.pageY - this.state.chatPos.y }
-        });
+        this.setState({ dragging: true, rel: { x: e.pageX - this.state.chatPos.x, y: e.pageY - this.state.chatPos.y } });
         e.stopPropagation(); e.preventDefault();
     }
 
@@ -153,7 +151,9 @@ export default class VideoMeet extends Component {
         document.execCommand(command, false, value);
         this.updateToolbarStates();
         if (this.editorRef.current) this.editorRef.current.focus();
-        if (command === 'fontSize') this.setState({ showFontSizeMenu: false });
+        if (command === 'fontSize' || command === 'foreColor' || command === 'hiliteColor' || command === 'removeFormat') {
+            this.setState({ showFontSizeMenu: false, showColorMenu: false });
+        }
     }
 
     sendMessage = () => {
@@ -169,6 +169,9 @@ export default class VideoMeet extends Component {
     }
 
     render() {
+        const colors = ['#f44336', '#ff9800', '#ffeb3b', '#4caf50', '#2196f3', '#9c27b0', '#e91e63', '#000000'];
+        const bgColors = ['#ffcdd2', '#ffe0b2', '#fff9c4', '#c8e6c9', '#bbdefb', '#e1bee7', '#f8bbd0', '#ffffff'];
+
         return (
             <div className="meetViewPage">
                 <header className="meetTopBar">
@@ -235,8 +238,32 @@ export default class VideoMeet extends Component {
                                         <div className={`toolBtn ${this.state.activeStyles.underline ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'underline')}><u>U</u></div>
                                         <div className={`toolBtn ${this.state.activeStyles.strikeThrough ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'strikeThrough')}><s>S</s></div>
                                         <span className="vDivider"></span>
-                                        <FormatColorTextIcon className="toolIcon" />
                                         
+                                        <div className="toolBtn relativePos" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); this.setState({ showColorMenu: !this.state.showColorMenu }); }}>
+                                            <FormatColorTextIcon className="bigToolIcon" />
+                                            {this.state.showColorMenu && (
+                                                <div className="colorPickerSubMenu" onMouseDown={(e) => e.stopPropagation()}>
+                                                    <div className="menuSection">
+                                                        <span className="sectionTitle">Text Color</span>
+                                                        <div className="colorGrid">
+                                                            {colors.map(c => (
+                                                                <div key={c} className="colorUnit" style={{ color: c }} onMouseDown={(e) => this.applyStyle(e, 'foreColor', c)}>A</div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div className="menuSection">
+                                                        <span className="sectionTitle">Background Color</span>
+                                                        <div className="colorGrid">
+                                                            {bgColors.map(c => (
+                                                                <div key={c} className="colorBlock" style={{ backgroundColor: c, border: c==='#ffffff' ? '1px solid #ccc' : 'none' }} onMouseDown={(e) => this.applyStyle(e, 'hiliteColor', c)}></div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <Button className="clearFormatBtn" onMouseDown={(e) => this.applyStyle(e, 'removeFormat')}>Clear</Button>
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <div className="toolBtn relativePos" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); this.setState({ showFontSizeMenu: !this.state.showFontSizeMenu }); }}>
                                             Aa
                                             {this.state.showFontSizeMenu && (
