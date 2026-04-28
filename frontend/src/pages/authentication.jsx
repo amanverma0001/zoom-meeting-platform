@@ -1,141 +1,129 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import React, { useState } from 'react'
 import { AuthContext } from '../contexts/AuthContext';
-import { ThemeContext } from '../contexts/ThemeContext';
-import { Snackbar } from '@mui/material';
+import { Button, TextField, Snackbar } from '@mui/material';
+import GoogleIcon from '@mui/icons-material/Google';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import AppleIcon from '@mui/icons-material/Apple';
+import MicrosoftIcon from '@mui/icons-material/Window';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import "../App.css"
 
 export default function Authentication() {
-    const [username, setUsername] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [name, setName] = React.useState("");
-    const [error, setError] = React.useState("");
-    const [message, setMessage] = React.useState("");
-    const [formState, setFormState] = React.useState(0);
-    const [open, setOpen] = React.useState(false);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
+    const [formState, setFormState] = useState(0); // 0: Sign In, 1: Sign Up
+    const [open, setOpen] = useState(false);
 
     const { handleRegister, handleLogin } = React.useContext(AuthContext);
-    const { isDarkMode } = React.useContext(ThemeContext);
 
     let handleAuth = async () => {
         try {
             if (formState === 0) {
-                await handleLogin(username, password)
-            }
-            if (formState === 1) {
-                let result = await handleRegister(name, username, password);
-                setUsername("");
-                setMessage(result);
-                setOpen(true);
-                setError("")
-                setFormState(0)
-                setPassword("")
+                await handleLogin(username, password);
+            } else {
+                await handleRegister(name, username, password);
+                setFormState(0);
             }
         } catch (err) {
-            console.log(err);
-            let message = (err.response?.data?.message) || "An error occurred";
-            setError(message);
+            setError(err.response?.data?.message || "Authentication failed");
+            setOpen(true);
         }
     }
 
     return (
-        <Grid container component="main" sx={{ height: '100vh' }}>
-            <CssBaseline />
-            <Grid
-                item
-                xs={false}
-                sm={4}
-                md={7}
-                sx={{
-                    backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundColor: (t) =>
-                        t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-            />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                <Box
-                    sx={{
-                        my: 8,
-                        mx: 4,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-                        <LockOutlinedIcon />
-                    </Avatar>
+        <div className="authPageContainer">
+            {/* Left Side: Illustration */}
+            <div className="authIllustration">
+                <img src="/logo3.png" alt="Meeting Illustration" />
+            </div>
 
-                    <Box sx={{ mb: 3 }}>
-                        <Button variant={formState === 0 ? "contained" : "text"} onClick={() => { setFormState(0) }}>
-                            Sign In
-                        </Button>
-                        <Button variant={formState === 1 ? "contained" : "text"} onClick={() => { setFormState(1) }}>
-                            Sign Up
-                        </Button>
-                    </Box>
-
-                    <Box component="form" noValidate sx={{ mt: 1, width: '100%' }}>
+            {/* Right Side: Form */}
+            <div className="authFormSection">
+                <div className="authFormContainer">
+                    <h1 className="authTitle">{formState === 0 ? "Sign in" : "Sign up"}</h1>
+                    
+                    <div className="inputGroup">
                         {formState === 1 && (
                             <TextField
-                                margin="normal"
-                                required
-                                fullWidth
                                 label="Full Name"
+                                variant="outlined"
+                                fullWidth
                                 value={name}
-                                autoFocus
                                 onChange={(e) => setName(e.target.value)}
+                                className="authInput"
                             />
                         )}
-
                         <TextField
-                            margin="normal"
-                            required
+                            label="Email or Username"
+                            variant="outlined"
                             fullWidth
-                            label="Username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            className="authInput"
                         />
                         <TextField
-                            margin="normal"
-                            required
-                            fullWidth
                             label="Password"
-                            value={password}
                             type="password"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-
-                        <p style={{ color: "red", minHeight: '1.5rem' }}>{error}</p>
-
-                        <Button
-                            type="button"
+                            variant="outlined"
                             fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                            onClick={handleAuth}
-                        >
-                            {formState === 0 ? "Login" : "Register"}
-                        </Button>
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="authInput"
+                        />
+                    </div>
 
-                    </Box>
-                </Box>
-            </Grid>
+                    <Button 
+                        variant="contained" 
+                        fullWidth 
+                        className="authMainBtn"
+                        onClick={handleAuth}
+                    >
+                        {formState === 0 ? "Next" : "Create Account"}
+                    </Button>
+
+                    <div className="authSwitchText">
+                        {formState === 0 ? "Don't have an account? " : "Already have an account? "}
+                        <span onClick={() => setFormState(formState === 0 ? 1 : 0)}>
+                            {formState === 0 ? "Sign Up" : "Sign In"}
+                        </span>
+                    </div>
+
+                    <div className="socialLoginDivider">
+                        <span>Or sign in with</span>
+                    </div>
+
+                    <div className="socialIconsGrid">
+                        <div className="socialIconItem"><VpnKeyIcon /> <span>SSO</span></div>
+                        <div className="socialIconItem"><AppleIcon /> <span>Apple</span></div>
+                        <div className="socialIconItem"><GoogleIcon /> <span>Google</span></div>
+                        <div className="socialIconItem"><FacebookIcon /> <span>Facebook</span></div>
+                        <div className="socialIconItem"><MicrosoftIcon /> <span>Microsoft</span></div>
+                    </div>
+
+                    <div className="authFooterLinks">
+                        <p>Forgot password?</p>
+                        <div className="footerLegal">
+                            <span>Help</span>
+                            <span>Terms</span>
+                            <span>Privacy</span>
+                        </div>
+                        <p className="recaptchaText">
+                            Apna is protected by reCAPTCHA and the Google <br/>
+                            Privacy Policy and Terms of Service apply.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <Snackbar
                 open={open}
                 autoHideDuration={4000}
                 onClose={() => setOpen(false)}
-                message={message}
+                message={error}
             />
-        </Grid>
-    );
+        </div>
+    )
 }

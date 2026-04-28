@@ -1,65 +1,79 @@
 import React, { useContext, useState } from 'react'
 import withAuth from '../utils/withAuth'
 import { useNavigate } from 'react-router-dom'
-import "../App.css";
 import { Button, IconButton, TextField } from '@mui/material';
 import RestoreIcon from '@mui/icons-material/Restore';
-import { AuthContext } from '../contexts/AuthContext';
+import VideoCallIcon from '@mui/icons-material/VideoCall';
+import "../App.css";
 
 function HomeComponent() {
     let navigate = useNavigate();
     const [meetingCode, setMeetingCode] = useState("");
 
-    const { addToUserHistory } = useContext(AuthContext);
-
     let handleJoinVideoCall = async () => {
-        await addToUserHistory(meetingCode)
-        navigate(`/${meetingCode}`)
+        if (meetingCode.trim()) {
+            navigate(`/${meetingCode}`);
+        }
     }
 
     return (
-        <>
-            <div className="navBar">
-                <div style={{ display: "flex", alignItems: "center" }}>
-                    <h2>Apna Video Call</h2>
+        <div className="dashboardContainer">
+            {/* Top Navigation Bar */}
+            <nav className="dashboardNav">
+                <div className="navBrand">
+                    <h2 className="zoomLogoSmall">zoom</h2>
+                    <span className="brandSubtitle">Workplace</span>
                 </div>
-
-                <div style={{ display: "flex", alignItems: "center" }}>
-                    <IconButton onClick={() => navigate("/history")}>
-                        <RestoreIcon />
-                    </IconButton>
-                    <p style={{ marginRight: "1rem" }}>History</p>
-
-                    <Button onClick={() => {
-                        localStorage.removeItem("token")
-                        navigate("/auth")
-                    }}>
+                <div className="navActions">
+                    <div className="navLink" onClick={() => navigate("/history")}>
+                        <RestoreIcon /> <span>History</span>
+                    </div>
+                    <Button 
+                        variant="outlined" 
+                        className="logoutBtn"
+                        onClick={() => {
+                            localStorage.removeItem("token");
+                            window.location.reload();
+                        }}
+                    >
                         Logout
                     </Button>
                 </div>
-            </div>
+            </nav>
 
-            <div className="meetContainer">
-                <div className="leftPanel">
-                    <div>
-                        <h2>Providing Quality Video Call Just Like Quality Education</h2>
-                        <div style={{ display: 'flex', gap: "10px" }}>
-                            <TextField 
-                                onChange={e => setMeetingCode(e.target.value)} 
-                                id="outlined-basic" 
-                                label="Meeting Code" 
-                                variant="outlined" 
-                                fullWidth
-                            />
-                            <Button onClick={handleJoinVideoCall} variant='contained'>Join</Button>
-                        </div>
+            {/* Main Hero Section */}
+            <main className="dashboardMain">
+                <div className="heroContent">
+                    <h1 className="heroTitle">
+                        Connect anytime, <br/>
+                        <span>anywhere with anyone.</span>
+                    </h1>
+                    <p className="heroSubtitle">Providing quality video calls for work and education.</p>
+                    
+                    <div className="joinActions">
+                        <TextField 
+                            label="Enter Meeting Code" 
+                            variant="outlined" 
+                            value={meetingCode} 
+                            onChange={e => setMeetingCode(e.target.value)}
+                            className="meetingInput"
+                        />
+                        <Button 
+                            variant="contained" 
+                            className="joinBtn"
+                            onClick={handleJoinVideoCall}
+                            startIcon={<VideoCallIcon />}
+                        >
+                            Join
+                        </Button>
                     </div>
                 </div>
-                <div className='rightPanel'>
-                    <img srcSet='/logo3.png' alt="" />
+
+                <div className="heroIllustration">
+                    <img src="/logo3.png" alt="Illustration" />
                 </div>
-            </div>
-        </>
+            </main>
+        </div>
     )
 }
 
