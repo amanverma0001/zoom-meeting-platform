@@ -196,9 +196,72 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .landingFooter {
   position: absolute;
   bottom: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
   color: var(--text-dim);
   font-size: 0.9rem;
 }
+
+.divider {
+  opacity: 0.3;
+}
+
+.langBtn {
+  text-transform: none !important;
+  color: var(--text-dim) !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+  padding: 4px 12px !important;
+  background: var(--bg-card) !important;
+  transition: all 0.2s ease !important;
+}
+
+.langBtn:hover {
+  border-color: #0b5cff !important;
+  color: #0b5cff !important;
+}
+
+.langBtn .rotate {
+  transform: rotate(180deg);
+}
+
+.langMenu .MuiPaper-root {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--glass-border);
+  min-width: 150px;
+  margin-bottom: 10px;
+}
+
+.langMenuItem {
+  font-size: 0.9rem !important;
+  padding: 10px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.checkIcon {
+  font-size: 1.1rem !important;
+  color: #0b5cff;
+}
+
+.selectedLang {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
 
 /* Dashboard & Home Styles */
 .dashboardContainer {
