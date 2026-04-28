@@ -1152,7 +1152,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .messageItemBubble {
   display: flex;
   flex-direction: column;
-  margin-bottom: 8px;
+  margin-bottom: 22px; /* Matches the clean gap in your SS */
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -1162,7 +1162,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 .messageItemBubble.grouped {
-  margin-bottom: 1px;
+  margin-bottom: 4px; /* Perfectly aligned grouped spacing */
 }
 
 .groupedContent {
