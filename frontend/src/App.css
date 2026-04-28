@@ -947,7 +947,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
-  color: #747487;
+  color: #444 !important;
   margin-bottom: 8px;
 }
 
@@ -991,9 +991,14 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   font-family: inherit;
   font-size: 0.95rem;
   min-height: 140px;
-  color: #1d1d1d;
+  color: #000000 !important;
   padding: 10px 0;
   background-color: #ffffff !important;
+}
+
+.chatTextArea::placeholder {
+  color: #555555 !important;
+  opacity: 1;
 }
 
 .inputToolbar {
@@ -1055,7 +1060,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   font-size: 1rem;
   border-radius: 4px;
   cursor: pointer;
-  color: #555;
+  color: #1a1a1a !important; /* Darker for better visibility */
   transition: all 0.2s;
 }
 
@@ -1070,7 +1075,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 
 .toolIcon {
   font-size: 1.1rem !important;
-  color: #555;
+  color: #333 !important; /* Darker icons */
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
