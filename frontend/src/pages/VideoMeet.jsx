@@ -37,6 +37,7 @@ export default class VideoMeet extends Component {
         super(props);
         this.localVideoref = React.createRef();
         this.editorRef = React.createRef();
+        this.messagesEndRef = React.createRef();
         this.state = {
             videoPresent: false,
             audioPresent: false,
@@ -59,15 +60,27 @@ export default class VideoMeet extends Component {
         socket.on('chat-message', (data, sender) => {
             if (sender !== this.state.username) {
                 this.setState(prevState => ({
-                    messages: [{ 
+                    messages: [...prevState.messages, { 
                         "sender": sender, 
                         "html": data,
                         "time": new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    }, ...prevState.messages],
+                    }],
                     newMessages: prevState.showChat ? 0 : prevState.newMessages + 1
-                }));
+                }), this.scrollToBottom);
             }
         });
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.messages.length !== this.state.messages.length) {
+            this.scrollToBottom();
+        }
+    }
+
+    scrollToBottom = () => {
+        if (this.messagesEndRef.current) {
+            this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
     }
 
     updateToolbarStates = () => {
@@ -96,8 +109,8 @@ export default class VideoMeet extends Component {
         const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         this.setState(prevState => ({
-            messages: [{ "sender": "You", "html": content, "time": time }, ...prevState.messages]
-        }));
+            messages: [...prevState.messages, { "sender": "You", "html": content, "time": time }]
+        }), this.scrollToBottom);
 
         socket.emit('chat-message', content, this.state.username);
         this.editorRef.current.innerHTML = "";
@@ -135,7 +148,7 @@ export default class VideoMeet extends Component {
                                 <p className="meetingGroupNotice">Messages addressed to "Meeting Group Chat" will also appear in the meeting group chat in Team Chat</p>
                                 <div className="messagesContainer">
                                     {this.state.messages.map((m, i) => {
-                                        // Logic for newest-at-top grouping:
+                                        // Chronological grouping logic:
                                         // Show header if this is index 0 OR if the message BEFORE it (i-1) is a different sender
                                         const showHeader = (i === 0 || this.state.messages[i-1].sender !== m.sender);
                                         
@@ -158,6 +171,8 @@ export default class VideoMeet extends Component {
                                             </div>
                                         );
                                     })}
+                                    {/* Invisible div to track the bottom of the list */}
+                                    <div ref={this.messagesEndRef} />
                                 </div>
                             </div>
 
