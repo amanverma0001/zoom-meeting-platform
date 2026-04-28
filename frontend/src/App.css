@@ -1194,14 +1194,23 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .msgBubbleContent {
   background-color: #eef4ff;
   color: #1a1a1a;
-  padding: 8px 14px;
+  padding: 6px 12px; /* Reduced padding */
   border-radius: 12px;
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1.4;
+  width: fit-content; /* Only as wide as the text */
   max-width: 85%;
   word-wrap: break-word;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
+
+.localVideoFeed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
 
 .msgBubbleContent b { font-weight: bold; }
 .msgBubbleContent i { font-style: italic; }

@@ -46,6 +46,7 @@ export default class VideoMeet extends Component {
             chatPos: { x: 50, y: 50 },
             dragging: false,
             rel: null, 
+            localStream: null,
             showParticipants: false,
             messages: [],
             newMessages: 0,
@@ -78,9 +79,37 @@ export default class VideoMeet extends Component {
         document.addEventListener('mouseup', this.onMouseUp);
     }
 
-    componentWillUnmount() {
-        document.removeEventListener('mousemove', this.onMouseMove);
-        document.removeEventListener('mouseup', this.onMouseUp);
+    getPermissions = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            this.setState({ localStream: stream, videoPresent: true, audioPresent: true }, () => {
+                if (this.localVideoref.current) {
+                    this.localVideoref.current.srcObject = stream;
+                }
+            });
+        } catch (err) {
+            console.error("Error accessing media devices:", err);
+        }
+    }
+
+    handleVideo = () => {
+        if (!this.state.localStream) {
+            this.getPermissions();
+            return;
+        }
+        const videoTrack = this.state.localStream.getVideoTracks()[0];
+        videoTrack.enabled = !videoTrack.enabled;
+        this.setState({ videoPresent: videoTrack.enabled });
+    }
+
+    handleAudio = () => {
+        if (!this.state.localStream) {
+            this.getPermissions();
+            return;
+        }
+        const audioTrack = this.state.localStream.getAudioTracks()[0];
+        audioTrack.enabled = !audioTrack.enabled;
+        this.setState({ audioPresent: audioTrack.enabled });
     }
 
     onMouseDown = (e) => {
@@ -88,26 +117,18 @@ export default class VideoMeet extends Component {
         if (e.button !== 0) return;
         this.setState({
             dragging: true,
-            rel: {
-                x: e.pageX - this.state.chatPos.x,
-                y: e.pageY - this.state.chatPos.y
-            }
+            rel: { x: e.pageX - this.state.chatPos.x, y: e.pageY - this.state.chatPos.y }
         });
         e.stopPropagation();
         e.preventDefault();
     }
 
-    onMouseUp = (e) => {
-        this.setState({ dragging: false });
-    }
+    onMouseUp = () => this.setState({ dragging: false });
 
     onMouseMove = (e) => {
         if (!this.state.dragging) return;
         this.setState({
-            chatPos: {
-                x: e.pageX - this.state.rel.x,
-                y: e.pageY - this.state.rel.y
-            }
+            chatPos: { x: e.pageX - this.state.rel.x, y: e.pageY - this.state.rel.y }
         });
         e.stopPropagation();
         e.preventDefault();
@@ -168,7 +189,11 @@ export default class VideoMeet extends Component {
                 <main className="meetStage">
                     <div className={`stageCenter ${(this.state.showChat && !this.state.isPoppedOut) || this.state.showParticipants ? 'shrunkGrid' : ''}`}>
                         <div className="participantBox">
-                            {!this.state.videoPresent && <div className="initialAvatar">{this.state.username.charAt(0).toUpperCase()}</div>}
+                            {this.state.videoPresent ? (
+                                <video ref={this.localVideoref} autoPlay muted className="localVideoFeed"></video>
+                            ) : (
+                                <div className="initialAvatar">{this.state.username.charAt(0).toUpperCase()}</div>
+                            )}
                             <div className="nameTag">{!this.state.audioPresent && <MicOffIcon className="micOffSmall" />}{this.state.username}</div>
                         </div>
                     </div>
@@ -207,7 +232,6 @@ export default class VideoMeet extends Component {
                                                 )}
                                                 {!showHeader && (
                                                     <div className="msgContentRow">
-                                                        {/* Pixel-Perfect Ghost Spacer instead of manual padding */}
                                                         <div className="msgUserAvatar ghostSpacer"></div>
                                                         <div className="msgBubbleContent" dangerouslySetInnerHTML={{ __html: m.html }} />
                                                     </div>
@@ -266,11 +290,11 @@ export default class VideoMeet extends Component {
 
                 <footer className="meetToolbar">
                     <div className="toolGroup left">
-                        <div className="toolItem" onClick={() => this.setState({ audioPresent: !this.state.audioPresent })}>
+                        <div className="toolItem" onClick={this.handleAudio}>
                             <IconButton className={!this.state.audioPresent ? "redStatus" : ""}>{this.state.audioPresent ? <MicIcon /> : <MicOffIcon />}</IconButton>
                             <span>{this.state.audioPresent ? "Mute" : "Unmute"}</span>
                         </div>
-                        <div className="toolItem" onClick={() => this.setState({ videoPresent: !this.state.videoPresent })}>
+                        <div className="toolItem" onClick={this.handleVideo}>
                             <IconButton className={!this.state.videoPresent ? "redStatus" : ""}>{this.state.videoPresent ? <VideocamIcon /> : <VideocamOffIcon />}</IconButton>
                             <span>{this.state.videoPresent ? "Stop Video" : "Start Video"}</span>
                         </div>
