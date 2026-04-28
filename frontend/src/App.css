@@ -775,9 +775,11 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  color: #fff;
+  color: #fff !important;
   transition: opacity 0.2s;
+  min-width: 60px;
 }
 
 .toolItem:hover {
@@ -786,16 +788,26 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 
 .toolItem span {
   font-size: 0.7rem;
-  margin-top: 2px;
+  margin-top: 4px;
+  color: white !important;
+  white-space: nowrap;
 }
 
-.toolItem svg {
-  font-size: 1.5rem;
+.toolItem .MuiIconButton-root {
+  color: white !important;
+  padding: 8px !important;
+}
+
+.toolItem .MuiIconButton-root svg {
+  font-size: 1.6rem !important;
+  display: block !important;
+  visibility: visible !important;
 }
 
 .redStatus {
   color: #ff4b4b !important;
 }
+
 
 .shareIconBox {
   background-color: #4CAF50;

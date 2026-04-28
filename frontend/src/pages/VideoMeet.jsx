@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import io from 'socket.io-client';
-import { Button, IconButton, TextField, Badge, InputAdornment } from '@mui/material';
+import { Button, IconButton, TextField, Badge } from '@mui/material';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import MicIcon from '@mui/icons-material/Mic';
@@ -22,13 +22,6 @@ import server from '../environment';
 import "../App.css"
 
 const socket = io.connect(server);
-var connections = {};
-
-const peerConfig = {
-    "iceServers": [
-        { "urls": "stun:stun.l.google.com:19302" }
-    ]
-}
 
 export default class VideoMeet extends Component {
     constructor(props) {
@@ -36,11 +29,9 @@ export default class VideoMeet extends Component {
         this.localVideoref = React.createRef();
         this.videoAvailable = false;
         this.audioAvailable = false;
-
         this.state = {
             videoPresent: false,
             audioPresent: false,
-            screenPresent: false,
             showChat: false,
             showParticipants: false,
             messages: [],
@@ -48,14 +39,35 @@ export default class VideoMeet extends Component {
             newMessages: 0,
             askForUsername: true,
             username: localStorage.getItem("username") || "",
-            videos: [],
-            screenAvailable: false
+            videos: []
         }
         this.connections = {};
     }
 
     componentDidMount() {
         this.getPermissions();
+        this.setupSocketListeners();
+    }
+
+    setupSocketListeners = () => {
+        socket.on('chat-message', (data, sender) => {
+            this.setState(prevState => ({
+                // Add new messages to the FRONT of the array so they appear at the TOP
+                messages: [{ "sender": sender, "message": data }, ...prevState.messages],
+                newMessages: prevState.newMessages + 1
+            }));
+        });
+
+        socket.on('user-joined', (id, clients) => {
+            clients.forEach(clientId => {
+                if (!this.connections[clientId]) {
+                    this.connections[clientId] = new RTCPeerConnection({
+                        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+                    });
+                    // Logic for WebRTC peers...
+                }
+            });
+        });
     }
 
     getPermissions = async () => {
@@ -63,75 +75,36 @@ export default class VideoMeet extends Component {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             this.videoAvailable = true;
             this.audioAvailable = true;
-            if (this.localVideoref.current) {
-                this.localVideoref.current.srcObject = stream;
-            }
-        } catch (e) {
-            console.log(e);
-        }
+            if (this.localVideoref.current) this.localVideoref.current.srcObject = stream;
+        } catch (e) { console.log(e); }
     }
 
     handleVideo = () => this.setState({ videoPresent: !this.state.videoPresent }, this.getUserFullMedia);
     handleAudio = () => this.setState({ audioPresent: !this.state.audioPresent }, this.getUserFullMedia);
 
     getUserFullMedia = () => {
-        if ((this.state.videoPresent && this.videoAvailable) || (this.state.audioPresent && this.audioAvailable)) {
+        if (this.state.videoPresent || this.state.audioPresent) {
             navigator.mediaDevices.getUserMedia({ video: this.state.videoPresent, audio: this.state.audioPresent })
-                .then(this.getUserMediaSuccess)
-                .catch(e => console.log(e));
-        } else {
-            try {
-                let tracks = this.localVideoref.current.srcObject.getTracks();
-                tracks.forEach(track => track.stop());
-            } catch (e) { }
-        }
-    }
-
-    getUserMediaSuccess = (stream) => {
-        try {
-            window.localStream.getTracks().forEach(track => track.stop());
-        } catch (e) { }
-
-        window.localStream = stream;
-        this.localVideoref.current.srcObject = stream;
-
-        for (let id in this.connections) {
-            if (id === socket.id) continue;
-            this.connections[id].addStream(window.localStream);
-            this.connections[id].createOffer().then((description) => {
-                this.connections[id].setLocalDescription(description)
-                    .then(() => {
-                        socket.emit('signal', id, JSON.stringify({ 'sdp': this.connections[id].localDescription }));
-                    })
-            })
-        }
-    }
-
-    handleEndCall = () => {
-        try {
-            let tracks = this.localVideoref.current.srcObject.getTracks();
-            tracks.forEach(track => track.stop());
-        } catch (e) { }
-        window.location.href = "/home";
-    }
-
-    connect = () => this.setState({ askForUsername: false }, () => {
-        this.getUserMedia();
-        socket.emit('join-call', window.location.href);
-    });
-
-    getUserMedia = () => {
-        if ((this.state.videoPresent && this.videoAvailable) || (this.state.audioPresent && this.audioAvailable)) {
-            navigator.mediaDevices.getUserMedia({ video: this.state.videoPresent, audio: this.state.audioPresent })
-                .then(this.getUserMediaSuccess)
-                .catch(e => console.log(e));
+                .then(stream => {
+                    if (this.localVideoref.current) this.localVideoref.current.srcObject = stream;
+                });
         }
     }
 
     sendMessage = () => {
+        if (this.state.message.trim() === "") return;
         socket.emit('chat-message', this.state.message, this.state.username);
-        this.setState({ message: "" });
+        // Also add our own message to the top of our list immediately
+        this.setState(prevState => ({
+            messages: [{ "sender": "Me", "message": this.state.message }, ...prevState.messages],
+            message: ""
+        }));
     }
+
+    connect = () => this.setState({ askForUsername: false }, () => {
+        this.getUserFullMedia();
+        socket.emit('join-call', window.location.href);
+    });
 
     render() {
         return (
@@ -173,9 +146,7 @@ export default class VideoMeet extends Component {
                             </div>
                             <div className="topRightActions">
                                 <SecurityIcon className="securityIcon" />
-                                <div className="viewToggle">
-                                    <GridViewIcon /> <span>View</span>
-                                </div>
+                                <div className="viewToggle"><GridViewIcon /> <span>View</span></div>
                             </div>
                         </header>
 
@@ -193,79 +164,53 @@ export default class VideoMeet extends Component {
                                     {this.state.videoPresent ? (
                                         <video ref={this.localVideoref} className="stageVideo" autoPlay muted />
                                     ) : (
-                                        <div className="initialAvatar">
-                                            {this.state.username.charAt(0).toUpperCase()}
-                                        </div>
+                                        <div className="initialAvatar">{this.state.username.charAt(0).toUpperCase()}</div>
                                     )}
                                     <div className="nameTag">
                                         {!this.state.audioPresent && <MicOffIcon className="micOffSmall" />}
                                         {this.state.username} (You)
                                     </div>
                                 </div>
-
-                                {this.state.videos.map((video) => (
-                                    <div className="participantBox" key={video.socketId}>
-                                        <video
-                                            ref={(instance) => { if (instance) instance.srcObject = video.stream; }}
-                                            autoPlay className="stageVideo"
-                                        />
+                                {this.state.videos.map((video, index) => (
+                                    <div className="participantBox" key={index}>
+                                        <video ref={(instance) => { if (instance) instance.srcObject = video.stream; }} autoPlay className="stageVideo" />
                                         <div className="nameTag">Participant</div>
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Side Panel: Chat */}
-                            {this.state.showChat && (
+                            {(this.state.showChat || this.state.showParticipants) && (
                                 <div className="sidePanel">
                                     <div className="panelHeader">
-                                        <span>Chat</span>
-                                        <IconButton onClick={() => this.setState({ showChat: false })}><CloseIcon /></IconButton>
-                                    </div>
-                                    <div className="panelBody chatBody">
-                                        {this.state.messages.length > 0 ? this.state.messages.map((m, i) => (
-                                            <div key={i} className="chatBubble">
-                                                <span className="chatSender">{m.sender}</span>
-                                                <p className="chatMsg">{m.message}</p>
-                                            </div>
-                                        )) : <p className="emptyState">No messages yet</p>}
-                                    </div>
-                                    <div className="panelFooter">
-                                        <TextField 
-                                            fullWidth 
-                                            placeholder="Send message..." 
-                                            variant="standard" 
-                                            value={this.state.message}
-                                            onChange={(e) => this.setState({ message: e.target.value })}
-                                        />
-                                        <IconButton onClick={this.sendMessage} color="primary"><SendIcon /></IconButton>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Side Panel: Participants */}
-                            {this.state.showParticipants && (
-                                <div className="sidePanel">
-                                    <div className="panelHeader">
-                                        <span>Participants ({this.state.videos.length + 1})</span>
-                                        <IconButton onClick={() => this.setState({ showParticipants: false })}><CloseIcon /></IconButton>
+                                        <span>{this.state.showChat ? "Chat" : "Participants"}</span>
+                                        <IconButton onClick={() => this.setState({ showChat: false, showParticipants: false })}><CloseIcon /></IconButton>
                                     </div>
                                     <div className="panelBody">
-                                        <div className="participantItem">
-                                            <div className="pAvatar">{this.state.username.charAt(0)}</div>
-                                            <span className="pName">{this.state.username} (Me, Host)</span>
-                                            <div className="pStatus">
-                                                {this.state.audioPresent ? <MicIcon /> : <MicOffIcon className="red" />}
-                                                {this.state.videoPresent ? <VideocamIcon /> : <VideocamOffIcon className="red" />}
+                                        {this.state.showChat ? (
+                                            this.state.messages.map((m, i) => (
+                                                <div key={i} className="chatBubble">
+                                                    <span className="chatSender">{m.sender}</span>
+                                                    <p className="chatMsg">{m.message}</p>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="participantItem">
+                                                <div className="pAvatar">{this.state.username.charAt(0)}</div>
+                                                <span className="pName">{this.state.username} (Me)</span>
                                             </div>
-                                        </div>
-                                        {this.state.videos.map((v, i) => (
-                                            <div key={i} className="participantItem">
-                                                <div className="pAvatar">P</div>
-                                                <span className="pName">Participant</span>
-                                                <div className="pStatus"><MicIcon /><VideocamIcon /></div>
-                                            </div>
-                                        ))}
+                                        )}
                                     </div>
+                                    {this.state.showChat && (
+                                        <div className="panelFooter">
+                                            <TextField 
+                                                fullWidth placeholder="Message..." 
+                                                value={this.state.message}
+                                                onChange={(e) => this.setState({ message: e.target.value })}
+                                                onKeyPress={(e) => e.key === 'Enter' && this.sendMessage()}
+                                            />
+                                            <IconButton onClick={this.sendMessage} color="primary"><SendIcon /></IconButton>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </main>
@@ -292,7 +237,7 @@ export default class VideoMeet extends Component {
                                     <span>Participants</span>
                                 </div>
                                 <div className="toolItem" onClick={() => this.setState({ showChat: !this.state.showChat, showParticipants: false })}>
-                                    <Badge badgeContent={this.state.newMessages} color="primary">
+                                    <Badge badgeContent={this.state.newMessages} color="primary" invisible={this.state.showChat}>
                                         <ChatIcon className={this.state.showChat ? "activeBlue" : ""} />
                                     </Badge>
                                     <span>Chat</span>
@@ -305,7 +250,7 @@ export default class VideoMeet extends Component {
                             </div>
 
                             <div className="toolGroup right">
-                                <Button className="endBtn" onClick={this.handleEndCall}>
+                                <Button className="endBtn" onClick={() => window.location.href = "/home"}>
                                     <CloseIcon className="endIconCircle" />
                                     <span>End</span>
                                 </Button>
