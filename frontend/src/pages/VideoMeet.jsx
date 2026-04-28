@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import io from 'socket.io-client';
-import { Button, IconButton, TextField, Badge } from '@mui/material';
+import { Button, IconButton, Badge } from '@mui/material';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import MicIcon from '@mui/icons-material/Mic';
@@ -36,18 +36,13 @@ export default class VideoMeet extends Component {
     constructor(props) {
         super(props);
         this.localVideoref = React.createRef();
+        this.editorRef = React.createRef();
         this.state = {
             videoPresent: false,
             audioPresent: false,
             showChat: true,
             showParticipants: false,
-            showRichText: true,
-            isBold: false,
-            isItalic: false,
-            isUnderline: false,
-            isStrikethrough: false,
             messages: [],
-            message: "",
             newMessages: 0,
             username: localStorage.getItem("username") || "Amandeep Verma",
             videos: []
@@ -60,36 +55,28 @@ export default class VideoMeet extends Component {
             this.setState(prevState => ({
                 messages: [{ 
                     "sender": sender === this.state.username ? "Me" : sender, 
-                    "message": data.text,
-                    "style": data.style 
+                    "html": data 
                 }, ...prevState.messages],
                 newMessages: prevState.showChat ? 0 : prevState.newMessages + 1
             }));
         });
     }
 
+    applyStyle = (command) => {
+        document.execCommand(command, false, null);
+        if (this.editorRef.current) this.editorRef.current.focus();
+    }
+
     sendMessage = () => {
-        if (this.state.message.trim() === "") return;
-        const msgData = {
-            text: this.state.message,
-            style: {
-                bold: this.state.isBold,
-                italic: this.state.isItalic,
-                underline: this.state.isUnderline,
-                strike: this.state.isStrikethrough
-            }
-        };
-        socket.emit('chat-message', msgData, this.state.username);
-        this.setState({ message: "" });
+        if (!this.editorRef.current) return;
+        const content = this.editorRef.current.innerHTML;
+        if (content.trim() === "" || content === "<br>") return;
+        
+        socket.emit('chat-message', content, this.state.username);
+        this.editorRef.current.innerHTML = "";
     }
 
     render() {
-        const inputStyle = {
-            fontWeight: this.state.isBold ? 'bold' : 'normal',
-            fontStyle: this.state.isItalic ? 'italic' : 'normal',
-            textDecoration: `${this.state.isUnderline ? 'underline' : ''} ${this.state.isStrikethrough ? 'line-through' : ''}`.trim()
-        };
-
         return (
             <div className="meetViewPage">
                 <header className="meetTopBar">
@@ -121,13 +108,7 @@ export default class VideoMeet extends Component {
                                     {this.state.messages.map((m, i) => (
                                         <div key={i} className="messageItem">
                                             <span className="msgSender">{m.sender}</span>
-                                            <p className="msgBody" style={{
-                                                fontWeight: m.style?.bold ? 'bold' : 'normal',
-                                                fontStyle: m.style?.italic ? 'italic' : 'normal',
-                                                textDecoration: `${m.style?.underline ? 'underline' : ''} ${m.style?.strike ? 'line-through' : ''}`.trim()
-                                            }}>
-                                                {m.message}
-                                            </p>
+                                            <div className="msgBody" dangerouslySetInnerHTML={{ __html: m.html }} />
                                         </div>
                                     ))}
                                 </div>
@@ -135,31 +116,33 @@ export default class VideoMeet extends Component {
 
                             <div className="panelFooterWhite">
                                 <div className="whoCanSee"><GroupIcon /> <span>Who can see your messages?</span></div>
-                                <div className={`inputBoxWrapper richTextActive`}>
+                                <div className="inputBoxWrapper richTextActive">
                                     <div className="richTextToolbar">
-                                        <div className={`toolBtn ${this.state.isBold ? 'active' : ''}`} onClick={() => this.setState({ isBold: !this.state.isBold })}>B</div>
-                                        <div className={`toolBtn ${this.state.isItalic ? 'active' : ''}`} onClick={() => this.setState({ isItalic: !this.state.isItalic })}><i>I</i></div>
-                                        <div className={`toolBtn ${this.state.isUnderline ? 'active' : ''}`} onClick={() => this.setState({ isUnderline: !this.state.isUnderline })}><u>U</u></div>
-                                        <div className={`toolBtn ${this.state.isStrikethrough ? 'active' : ''}`} onClick={() => this.setState({ isStrikethrough: !this.state.isStrikethrough })}><s>S</s></div>
+                                        <div className="toolBtn" onClick={() => this.applyStyle('bold')}>B</div>
+                                        <div className="toolBtn" onClick={() => this.applyStyle('italic')}><i>I</i></div>
+                                        <div className="toolBtn" onClick={() => this.applyStyle('underline')}><u>U</u></div>
+                                        <div className="toolBtn" onClick={() => this.applyStyle('strikeThrough')}><s>S</s></div>
                                         <span className="vDivider"></span>
-                                        <FormatColorTextIcon className="toolIcon" />
-                                        <div className="toolBtn">Aa</div>
-                                        <LinkIcon className="toolIcon" />
+                                        <FormatColorTextIcon className="toolIcon" onClick={() => this.applyStyle('foreColor')} />
+                                        <div className="toolBtn" onClick={() => this.applyStyle('fontSize')}>Aa</div>
+                                        <LinkIcon className="toolIcon" onClick={() => this.applyStyle('createLink')} />
                                         <span className="vDivider"></span>
-                                        <div className="toolBtn">Hn</div>
-                                        <FormatListBulletedIcon className="toolIcon" />
-                                        <FormatListNumberedIcon className="toolIcon" />
+                                        <div className="toolBtn" onClick={() => this.applyStyle('formatBlock')}>Hn</div>
+                                        <FormatListBulletedIcon className="toolIcon" onClick={() => this.applyStyle('insertUnorderedList')} />
+                                        <FormatListNumberedIcon className="toolIcon" onClick={() => this.applyStyle('insertOrderedList')} />
                                         <MoreHorizIcon className="toolIcon" />
                                     </div>
                                     <div className="toPill"><span>to:</span><div className="bluePill">Meeting Group Chat</div></div>
-                                    <textarea 
-                                        placeholder="Type message here ..." 
-                                        className="chatTextArea"
-                                        style={inputStyle}
-                                        value={this.state.message}
-                                        onChange={(e) => this.setState({ message: e.target.value })}
+                                    
+                                    {/* Professional Content-Editable Editor */}
+                                    <div 
+                                        className="chatRichEditor"
+                                        contentEditable="true"
+                                        ref={this.editorRef}
                                         onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), this.sendMessage())}
-                                    />
+                                        placeholder="Type message here ..."
+                                    ></div>
+
                                     <div className="inputToolbar">
                                         <div className="leftTools">
                                             <div className="pencilBox activeBlue"><CreateIcon /></div>
@@ -176,7 +159,6 @@ export default class VideoMeet extends Component {
                 </main>
 
                 <footer className="meetToolbar">
-                    {/* ... (Existing toolbar from your VideoMeet.jsx) */}
                     <div className="toolGroup left">
                         <div className="toolItem" onClick={() => this.setState({ audioPresent: !this.state.audioPresent })}>
                             <IconButton className={!this.state.audioPresent ? "redStatus" : ""}>{this.state.audioPresent ? <MicIcon /> : <MicOffIcon />}</IconButton>

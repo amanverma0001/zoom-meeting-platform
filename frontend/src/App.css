@@ -983,23 +983,31 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   font-weight: 600;
 }
 
-.chatTextArea {
+.chatRichEditor {
   width: 100%;
-  border: none;
   outline: none;
-  resize: none;
   font-family: inherit;
   font-size: 0.95rem;
   min-height: 140px;
-  color: #000000 !important;
+  max-height: 300px;
+  color: #000000;
   padding: 10px 0;
-  background-color: #ffffff !important;
+  background-color: #ffffff;
+  overflow-y: auto;
+  line-height: 1.4;
 }
 
-.chatTextArea::placeholder {
-  color: #555555 !important;
-  opacity: 1;
+.chatRichEditor:empty:before {
+  content: attr(placeholder);
+  color: #555555;
+  cursor: text;
 }
+
+.chatRichEditor b { font-weight: bold; }
+.chatRichEditor i { font-style: italic; }
+.chatRichEditor u { text-decoration: underline; }
+.chatRichEditor strike { text-decoration: line-through; }
+
 
 .inputToolbar {
   display: flex;
