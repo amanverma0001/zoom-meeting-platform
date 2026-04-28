@@ -1198,7 +1198,14 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+.selectedColor {
+  border: 2px solid #0056d6 !important; /* Thick Blue Border */
+  box-shadow: 0 0 10px rgba(0, 86, 214, 0.5) !important; /* Blue Glow */
+  transform: scale(1.1); /* Slightly larger */
+}
+
 .colorBlock {
+
   width: 28px;
   height: 28px;
   cursor: pointer;

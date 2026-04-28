@@ -51,6 +51,8 @@ export default class VideoMeet extends Component {
             showColorMenu: false,
             showLinkMenu: false,
             linkUrl: '',
+            activeForeColor: null,
+            activeBgColor: null,
             showParticipants: false,
             messages: [],
             newMessages: 0,
@@ -152,8 +154,16 @@ export default class VideoMeet extends Component {
         e.stopPropagation();
         document.execCommand(command, false, value);
         this.updateToolbarStates();
+        
+        if (command === 'foreColor') this.setState({ activeForeColor: value });
+        if (command === 'hiliteColor') this.setState({ activeBgColor: value });
+        if (command === 'removeFormat') this.setState({ activeForeColor: null, activeBgColor: null });
+
         if (this.editorRef.current) this.editorRef.current.focus();
-        this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false });
+        
+        if (command === 'fontSize' || command === 'foreColor' || command === 'hiliteColor' || command === 'removeFormat') {
+            this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false });
+        }
     }
 
     addLink = (e) => {
@@ -168,11 +178,9 @@ export default class VideoMeet extends Component {
             this.editorRef.current.focus();
             const selection = window.getSelection();
             
-            // If something is highlighted, convert it to a link
             if (selection.toString().length > 0) {
                 document.execCommand('createLink', false, url);
             } else {
-                // Otherwise, paste the full URL as a link at the cursor
                 const linkHtml = `<a href="${url}" target="_blank" style="color: #0b5cff; text-decoration: underline;">${url}</a>&nbsp;`;
                 document.execCommand('insertHTML', false, linkHtml);
             }
@@ -181,7 +189,6 @@ export default class VideoMeet extends Component {
         this.setState({ showLinkMenu: false, linkUrl: '' });
         this.updateToolbarStates();
     }
-
 
     sendMessage = () => {
         if (!this.editorRef.current) return;
@@ -274,7 +281,7 @@ export default class VideoMeet extends Component {
                                                         <span className="sectionTitle">Text Color</span>
                                                         <div className="colorGrid">
                                                             {colors.map(c => (
-                                                                <div key={c} className="colorUnit" style={{ color: c }} onMouseDown={(e) => this.applyStyle(e, 'foreColor', c)}>A</div>
+                                                                <div key={c} className={`colorUnit ${this.state.activeForeColor === c ? 'selectedColor' : ''}`} style={{ color: c }} onMouseDown={(e) => this.applyStyle(e, 'foreColor', c)}>A</div>
                                                             ))}
                                                         </div>
                                                     </div>
@@ -282,7 +289,7 @@ export default class VideoMeet extends Component {
                                                         <span className="sectionTitle">Background Color</span>
                                                         <div className="colorGrid">
                                                             {bgColors.map(c => (
-                                                                <div key={c} className="colorBlock" style={{ backgroundColor: c, border: c==='#ffffff' ? '1px solid #ccc' : 'none' }} onMouseDown={(e) => this.applyStyle(e, 'hiliteColor', c)}></div>
+                                                                <div key={c} className={`colorBlock ${this.state.activeBgColor === c ? 'selectedColor' : ''}`} style={{ backgroundColor: c, border: c==='#ffffff' ? '1px solid #ccc' : 'none' }} onMouseDown={(e) => this.applyStyle(e, 'hiliteColor', c)}></div>
                                                             ))}
                                                         </div>
                                                     </div>
