@@ -858,7 +858,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 400px;
+  width: 450px;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
