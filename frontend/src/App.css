@@ -172,11 +172,26 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   font-size: 1.1rem !important;
   padding: 12px !important;
   border-radius: 12px !important;
+  color: var(--text-main) !important;
+  border-color: var(--glass-border) !important;
+  transition: all 0.3s ease !important;
+}
+
+.stackButton:hover {
+  color: #0b5cff !important;
+  border-color: #0b5cff !important;
+  background-color: rgba(11, 92, 255, 0.05) !important;
 }
 
 .mainBtn {
   background-color: #0b5cff !important;
+  color: white !important;
 }
+
+.mainBtn:hover {
+  background-color: #004ecc !important;
+}
+
 
 .landingFooter {
   position: absolute;
