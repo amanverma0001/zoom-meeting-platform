@@ -47,6 +47,7 @@ export default class VideoMeet extends Component {
             dragging: false,
             rel: null, 
             localStream: null,
+            showFontSizeMenu: false,
             showParticipants: false,
             messages: [],
             newMessages: 0,
@@ -77,36 +78,39 @@ export default class VideoMeet extends Component {
 
         document.addEventListener('mousemove', this.onMouseMove);
         document.addEventListener('mouseup', this.onMouseUp);
+        document.addEventListener('mousedown', this.handleOutsideClick);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('mousemove', this.onMouseMove);
+        document.removeEventListener('mouseup', this.onMouseUp);
+        document.removeEventListener('mousedown', this.handleOutsideClick);
+    }
+
+    handleOutsideClick = (e) => {
+        if (this.state.showFontSizeMenu) {
+            this.setState({ showFontSizeMenu: false });
+        }
     }
 
     getPermissions = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             this.setState({ localStream: stream, videoPresent: true, audioPresent: true }, () => {
-                if (this.localVideoref.current) {
-                    this.localVideoref.current.srcObject = stream;
-                }
+                if (this.localVideoref.current) this.localVideoref.current.srcObject = stream;
             });
-        } catch (err) {
-            console.error("Error accessing media devices:", err);
-        }
+        } catch (err) { console.error(err); }
     }
 
     handleVideo = () => {
-        if (!this.state.localStream) {
-            this.getPermissions();
-            return;
-        }
+        if (!this.state.localStream) { this.getPermissions(); return; }
         const videoTrack = this.state.localStream.getVideoTracks()[0];
         videoTrack.enabled = !videoTrack.enabled;
         this.setState({ videoPresent: videoTrack.enabled });
     }
 
     handleAudio = () => {
-        if (!this.state.localStream) {
-            this.getPermissions();
-            return;
-        }
+        if (!this.state.localStream) { this.getPermissions(); return; }
         const audioTrack = this.state.localStream.getAudioTracks()[0];
         audioTrack.enabled = !audioTrack.enabled;
         this.setState({ audioPresent: audioTrack.enabled });
@@ -119,26 +123,18 @@ export default class VideoMeet extends Component {
             dragging: true,
             rel: { x: e.pageX - this.state.chatPos.x, y: e.pageY - this.state.chatPos.y }
         });
-        e.stopPropagation();
-        e.preventDefault();
+        e.stopPropagation(); e.preventDefault();
     }
 
     onMouseUp = () => this.setState({ dragging: false });
 
     onMouseMove = (e) => {
         if (!this.state.dragging) return;
-        this.setState({
-            chatPos: { x: e.pageX - this.state.rel.x, y: e.pageY - this.state.rel.y }
-        });
-        e.stopPropagation();
-        e.preventDefault();
+        this.setState({ chatPos: { x: e.pageX - this.state.rel.x, y: e.pageY - this.state.rel.y } });
+        e.stopPropagation(); e.preventDefault();
     }
 
-    scrollToBottom = () => {
-        if (this.messagesEndRef.current) {
-            this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-    }
+    scrollToBottom = () => { if (this.messagesEndRef.current) this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" }); }
 
     updateToolbarStates = () => {
         this.setState({
@@ -151,24 +147,21 @@ export default class VideoMeet extends Component {
         });
     }
 
-    applyStyle = (e, command) => {
+    applyStyle = (e, command, value = null) => {
         e.preventDefault();
-        document.execCommand(command, false, null);
+        e.stopPropagation();
+        document.execCommand(command, false, value);
         this.updateToolbarStates();
         if (this.editorRef.current) this.editorRef.current.focus();
+        if (command === 'fontSize') this.setState({ showFontSizeMenu: false });
     }
 
     sendMessage = () => {
         if (!this.editorRef.current) return;
         const content = this.editorRef.current.innerHTML;
         if (content.trim() === "" || content === "<br>" || content === "<div><br></div>") return;
-        
         const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        this.setState(prevState => ({
-            messages: [...prevState.messages, { "sender": "You", "html": content, "time": time }]
-        }), this.scrollToBottom);
-
+        this.setState(prevState => ({ messages: [...prevState.messages, { "sender": "You", "html": content, "time": time }] }), this.scrollToBottom);
         socket.emit('chat-message', content, this.state.username);
         this.editorRef.current.innerHTML = "";
         this.editorRef.current.focus();
@@ -189,27 +182,17 @@ export default class VideoMeet extends Component {
                 <main className="meetStage">
                     <div className={`stageCenter ${(this.state.showChat && !this.state.isPoppedOut) || this.state.showParticipants ? 'shrunkGrid' : ''}`}>
                         <div className="participantBox">
-                            {this.state.videoPresent ? (
-                                <video ref={this.localVideoref} autoPlay muted className="localVideoFeed"></video>
-                            ) : (
-                                <div className="initialAvatar">{this.state.username.charAt(0).toUpperCase()}</div>
-                            )}
+                            {this.state.videoPresent ? <video ref={this.localVideoref} autoPlay muted className="localVideoFeed"></video> : <div className="initialAvatar">{this.state.username.charAt(0).toUpperCase()}</div>}
                             <div className="nameTag">{!this.state.audioPresent && <MicOffIcon className="micOffSmall" />}{this.state.username}</div>
                         </div>
                     </div>
 
                     {this.state.showChat && (
-                        <div 
-                            className={`zoomWhitePanel ${this.state.isPoppedOut ? 'floatingChat' : ''}`}
-                            style={this.state.isPoppedOut ? { left: this.state.chatPos.x, top: this.state.chatPos.y } : {}}
-                        >
+                        <div className={`zoomWhitePanel ${this.state.isPoppedOut ? 'floatingChat' : ''}`} style={this.state.isPoppedOut ? { left: this.state.chatPos.x, top: this.state.chatPos.y } : {}}>
                             <div className="panelHeaderWhite" onMouseDown={this.onMouseDown} style={{ cursor: this.state.isPoppedOut ? 'move' : 'default' }}>
                                 <span className="panelTitle">{this.state.username}'s Zoom Meeting</span>
                                 <div className="panelHeaderIcons">
-                                    <OpenInNewIcon 
-                                        className={this.state.isPoppedOut ? "activeBlueIcon" : ""} 
-                                        onClick={() => this.setState({ isPoppedOut: !this.state.isPoppedOut, chatPos: { x: 100, y: 100 } })} 
-                                    />
+                                    <OpenInNewIcon className={this.state.isPoppedOut ? "activeBlueIcon" : ""} onClick={() => this.setState({ isPoppedOut: !this.state.isPoppedOut, chatPos: { x: 100, y: 100 } })} />
                                     <CloseIcon onClick={() => this.setState({ showChat: false, isPoppedOut: false })} />
                                 </div>
                             </div>
@@ -253,7 +236,18 @@ export default class VideoMeet extends Component {
                                         <div className={`toolBtn ${this.state.activeStyles.strikeThrough ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'strikeThrough')}><s>S</s></div>
                                         <span className="vDivider"></span>
                                         <FormatColorTextIcon className="toolIcon" />
-                                        <div className="toolBtn">Aa</div>
+                                        
+                                        <div className="toolBtn relativePos" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); this.setState({ showFontSizeMenu: !this.state.showFontSizeMenu }); }}>
+                                            Aa
+                                            {this.state.showFontSizeMenu && (
+                                                <div className="fontSizeSubMenu">
+                                                    <div className="sizeItem smallSize" onMouseDown={(e) => this.applyStyle(e, 'fontSize', '2')}>Small</div>
+                                                    <div className="sizeItem mediumSize" onMouseDown={(e) => this.applyStyle(e, 'fontSize', '3')}>Medium</div>
+                                                    <div className="sizeItem largeSize" onMouseDown={(e) => this.applyStyle(e, 'fontSize', '5')}>Large</div>
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <LinkIcon className="toolIcon" />
                                         <span className="vDivider"></span>
                                         <div className="toolBtn">Hn</div>
@@ -262,24 +256,9 @@ export default class VideoMeet extends Component {
                                         <MoreHorizIcon className="toolIcon" />
                                     </div>
                                     <div className="toPill"><span>to:</span><div className="bluePill">Meeting Group Chat</div></div>
-                                    
-                                    <div 
-                                        className="chatRichEditor"
-                                        contentEditable="true"
-                                        ref={this.editorRef}
-                                        onKeyUp={this.updateToolbarStates}
-                                        onMouseUp={this.updateToolbarStates}
-                                        onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), this.sendMessage())}
-                                        placeholder="Type message here ..."
-                                    ></div>
-
+                                    <div className="chatRichEditor" contentEditable="true" ref={this.editorRef} onKeyUp={this.updateToolbarStates} onMouseUp={this.updateToolbarStates} onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), this.sendMessage())} placeholder="Type message here ..."></div>
                                     <div className="inputToolbar">
-                                        <div className="leftTools">
-                                            <div className="pencilBox activeBlue"><CreateIcon /></div>
-                                            <InsertDriveFileIcon />
-                                            <EmojiEmotionsIcon />
-                                            <MoreHorizIcon />
-                                        </div>
+                                        <div className="leftTools"><div className="pencilBox activeBlue"><CreateIcon /></div><InsertDriveFileIcon /><EmojiEmotionsIcon /><MoreHorizIcon /></div>
                                         <div className="sendIconBox" onClick={this.sendMessage}><SendIcon /></div>
                                     </div>
                                 </div>
@@ -290,14 +269,8 @@ export default class VideoMeet extends Component {
 
                 <footer className="meetToolbar">
                     <div className="toolGroup left">
-                        <div className="toolItem" onClick={this.handleAudio}>
-                            <IconButton className={!this.state.audioPresent ? "redStatus" : ""}>{this.state.audioPresent ? <MicIcon /> : <MicOffIcon />}</IconButton>
-                            <span>{this.state.audioPresent ? "Mute" : "Unmute"}</span>
-                        </div>
-                        <div className="toolItem" onClick={this.handleVideo}>
-                            <IconButton className={!this.state.videoPresent ? "redStatus" : ""}>{this.state.videoPresent ? <VideocamIcon /> : <VideocamOffIcon />}</IconButton>
-                            <span>{this.state.videoPresent ? "Stop Video" : "Start Video"}</span>
-                        </div>
+                        <div className="toolItem" onClick={this.handleAudio}><IconButton className={!this.state.audioPresent ? "redStatus" : ""}>{this.state.audioPresent ? <MicIcon /> : <MicOffIcon />}</IconButton><span>{this.state.audioPresent ? "Mute" : "Unmute"}</span></div>
+                        <div className="toolItem" onClick={this.handleVideo}><IconButton className={!this.state.videoPresent ? "redStatus" : ""}>{this.state.videoPresent ? <VideocamIcon /> : <VideocamOffIcon />}</IconButton><span>{this.state.videoPresent ? "Stop Video" : "Start Video"}</span></div>
                     </div>
                     <div className="toolGroup center">
                         <div className="toolItem"><PeopleIcon /><span>Participants</span></div>
@@ -308,9 +281,7 @@ export default class VideoMeet extends Component {
                         <div className="toolItem"><AutoFixHighIcon /><span>AI Companion</span></div>
                         <div className="toolItem"><MoreHorizIcon /><span>More</span></div>
                     </div>
-                    <div className="toolGroup right">
-                        <Button className="endBtn" onClick={() => window.location.href = "/home"}><CloseIcon className="endIconCircle" /><span>End</span></Button>
-                    </div>
+                    <div className="toolGroup right"><Button className="endBtn" onClick={() => window.location.href = "/home"}><CloseIcon className="endIconCircle" /><span>End</span></Button></div>
                 </footer>
             </div>
         )
