@@ -154,7 +154,24 @@ export default class VideoMeet extends Component {
     applyStyle = (e, command, value = null) => {
         e.preventDefault();
         e.stopPropagation();
-        document.execCommand(command, false, value);
+
+        if (command === 'formatBlock') {
+            if (this.editorRef.current) {
+                this.editorRef.current.focus();
+                const selection = window.getSelection();
+                // If nothing is highlighted, insert a NEW block instead of converting the current one
+                if (selection.toString().length === 0) {
+                    const tag = value.replace(/[<>]/g, ''); // Extract tag name (h1, h2, etc)
+                    const html = `<${tag}>&nbsp;</${tag}>`;
+                    document.execCommand('insertHTML', false, html);
+                } else {
+                    document.execCommand(command, false, value);
+                }
+            }
+        } else {
+            document.execCommand(command, false, value);
+        }
+
         this.updateToolbarStates();
         
         if (command === 'foreColor') this.setState({ activeForeColor: value });
@@ -165,6 +182,7 @@ export default class VideoMeet extends Component {
         
         this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false, showHnMenu: false });
     }
+
 
     addLink = (e) => {
         e.preventDefault();
