@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { AuthContext } from '../contexts/AuthContext';
-import { Button, TextField, Snackbar } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Button, TextField, Snackbar, CircularProgress, Backdrop } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import AppleIcon from '@mui/icons-material/Apple';
@@ -13,14 +14,16 @@ export default function Authentication() {
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [error, setError] = useState("");
-    const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
     const [formState, setFormState] = useState(0); // 0: Sign In, 1: Sign Up
     const [open, setOpen] = useState(false);
 
     const { handleRegister, handleLogin } = React.useContext(AuthContext);
+    const navigate = useNavigate();
 
     let handleAuth = async () => {
         try {
+            setLoading(true);
             if (formState === 0) {
                 await handleLogin(username, password);
             } else {
@@ -30,17 +33,33 @@ export default function Authentication() {
         } catch (err) {
             setError(err.response?.data?.message || "Authentication failed");
             setOpen(true);
+        } finally {
+            setLoading(false);
         }
+    }
+
+    const handleSocialLogin = (provider) => {
+        setLoading(true);
+        // Simulate OAuth delay
+        setTimeout(() => {
+            // Set a dummy token for demo purposes
+            localStorage.setItem("token", "social_demo_token");
+            navigate("/home");
+            setLoading(false);
+        }, 1500);
     }
 
     return (
         <div className="authPageContainer">
-            {/* Left Side: Illustration */}
+            <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+                <CircularProgress color="inherit" />
+                <span style={{ marginLeft: '1rem', fontWeight: 600 }}>Connecting...</span>
+            </Backdrop>
+
             <div className="authIllustration">
                 <img src="/logo3.png" alt="Meeting Illustration" />
             </div>
 
-            {/* Right Side: Form */}
             <div className="authFormSection">
                 <div className="authFormContainer">
                     <h1 className="authTitle">{formState === 0 ? "Sign in" : "Sign up"}</h1>
@@ -53,7 +72,6 @@ export default function Authentication() {
                                 fullWidth
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="authInput"
                             />
                         )}
                         <TextField
@@ -62,7 +80,6 @@ export default function Authentication() {
                             fullWidth
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="authInput"
                         />
                         <TextField
                             label="Password"
@@ -71,7 +88,6 @@ export default function Authentication() {
                             fullWidth
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="authInput"
                         />
                     </div>
 
@@ -96,11 +112,21 @@ export default function Authentication() {
                     </div>
 
                     <div className="socialIconsGrid">
-                        <div className="socialIconItem"><VpnKeyIcon /> <span>SSO</span></div>
-                        <div className="socialIconItem"><AppleIcon /> <span>Apple</span></div>
-                        <div className="socialIconItem"><GoogleIcon /> <span>Google</span></div>
-                        <div className="socialIconItem"><FacebookIcon /> <span>Facebook</span></div>
-                        <div className="socialIconItem"><MicrosoftIcon /> <span>Microsoft</span></div>
+                        <div className="socialIconItem" onClick={() => handleSocialLogin('SSO')}>
+                            <VpnKeyIcon /> <span>SSO</span>
+                        </div>
+                        <div className="socialIconItem" onClick={() => handleSocialLogin('Apple')}>
+                            <AppleIcon /> <span>Apple</span>
+                        </div>
+                        <div className="socialIconItem" onClick={() => handleSocialLogin('Google')}>
+                            <GoogleIcon /> <span>Google</span>
+                        </div>
+                        <div className="socialIconItem" onClick={() => handleSocialLogin('Facebook')}>
+                            <FacebookIcon /> <span>Facebook</span>
+                        </div>
+                        <div className="socialIconItem" onClick={() => handleSocialLogin('Microsoft')}>
+                            <MicrosoftIcon /> <span>Microsoft</span>
+                        </div>
                     </div>
 
                     <div className="authFooterLinks">

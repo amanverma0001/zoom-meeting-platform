@@ -496,19 +496,33 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   color: var(--text-dim);
   font-size: 0.75rem;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .socialIconItem svg {
   font-size: 2rem;
-  padding: 8px;
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  padding: 10px;
+  border: 1.5px solid var(--glass-border);
+  border-radius: 14px;
+  background: var(--bg-card);
+  transition: all 0.2s ease;
 }
 
 .socialIconItem:hover {
   color: #0b5cff;
+  transform: translateY(-4px);
 }
+
+.socialIconItem:hover svg {
+  border-color: #0b5cff;
+  box-shadow: 0 8px 25px rgba(11, 92, 255, 0.15);
+  background-color: rgba(11, 92, 255, 0.05);
+}
+
+.socialIconItem:active {
+  transform: scale(0.95);
+}
+
 
 .authFooterLinks {
   margin-top: 2rem;
