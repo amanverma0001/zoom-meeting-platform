@@ -937,7 +937,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 
 .panelFooterWhite {
   background-color: #f8f9fa;
-  padding: 12px;
+  padding: 16px 12px 20px 12px;
   border-top: 1px solid #e0e0e0;
 }
 
@@ -958,7 +958,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   background: #ffffff;
   border: 1px solid #0056d6;
   border-radius: 8px;
-  padding: 8px;
+  padding: 12px;
 }
 
 .toPill {
@@ -988,9 +988,10 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   outline: none;
   resize: none;
   font-family: inherit;
-  font-size: 0.9rem;
-  min-height: 60px;
+  font-size: 0.95rem;
+  min-height: 120px;
   color: #1d1d1d;
+  padding: 8px 0;
 }
 
 .inputToolbar {
