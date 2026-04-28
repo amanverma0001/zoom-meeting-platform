@@ -55,6 +55,7 @@ export default class VideoMeet extends Component {
             linkUrl: '',
             activeForeColor: null,
             activeBgColor: null,
+            activeHn: 'p',
             showParticipants: false,
             messages: [],
             newMessages: 0,
@@ -156,12 +157,12 @@ export default class VideoMeet extends Component {
         e.stopPropagation();
 
         if (command === 'formatBlock') {
+            const tag = value.replace(/[<>]/g, '');
+            this.setState({ activeHn: tag });
             if (this.editorRef.current) {
                 this.editorRef.current.focus();
                 const selection = window.getSelection();
-                // If nothing is highlighted, insert a NEW block instead of converting the current one
                 if (selection.toString().length === 0) {
-                    const tag = value.replace(/[<>]/g, ''); // Extract tag name (h1, h2, etc)
                     const html = `<${tag}>&nbsp;</${tag}>`;
                     document.execCommand('insertHTML', false, html);
                 } else {
@@ -176,13 +177,12 @@ export default class VideoMeet extends Component {
         
         if (command === 'foreColor') this.setState({ activeForeColor: value });
         if (command === 'hiliteColor') this.setState({ activeBgColor: value });
-        if (command === 'removeFormat') this.setState({ activeForeColor: null, activeBgColor: null });
+        if (command === 'removeFormat') this.setState({ activeForeColor: null, activeBgColor: null, activeHn: 'p' });
 
         if (this.editorRef.current) this.editorRef.current.focus();
         
         this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false, showHnMenu: false });
     }
-
 
     addLink = (e) => {
         e.preventDefault();
@@ -350,10 +350,10 @@ export default class VideoMeet extends Component {
                                             Hn
                                             {this.state.showHnMenu && (
                                                 <div className="hnSubMenu">
-                                                    <div className="hnItem h1Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h1>')}>Heading 1</div>
-                                                    <div className="hnItem h2Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h2>')}>Heading 2</div>
-                                                    <div className="hnItem h3Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h3>')}>Heading 3</div>
-                                                    <div className="hnItem pItem" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<p>')}>Paragraph <CheckIcon className="activeCheck" /></div>
+                                                    <div className="hnItem h1Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h1>')}>Heading 1 {this.state.activeHn === 'h1' && <CheckIcon className="activeCheck" />}</div>
+                                                    <div className="hnItem h2Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h2>')}>Heading 2 {this.state.activeHn === 'h2' && <CheckIcon className="activeCheck" />}</div>
+                                                    <div className="hnItem h3Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h3>')}>Heading 3 {this.state.activeHn === 'h3' && <CheckIcon className="activeCheck" />}</div>
+                                                    <div className="hnItem pItem" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<p>')}>Paragraph {this.state.activeHn === 'p' && <CheckIcon className="activeCheck" />}</div>
                                                 </div>
                                             )}
                                         </div>
