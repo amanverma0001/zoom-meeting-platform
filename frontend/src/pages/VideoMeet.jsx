@@ -27,6 +27,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
+import CheckIcon from '@mui/icons-material/Check';
 import server from '../environment';
 import "../App.css"
 
@@ -50,6 +51,7 @@ export default class VideoMeet extends Component {
             showFontSizeMenu: false,
             showColorMenu: false,
             showLinkMenu: false,
+            showHnMenu: false,
             linkUrl: '',
             activeForeColor: null,
             activeBgColor: null,
@@ -93,8 +95,8 @@ export default class VideoMeet extends Component {
     }
 
     handleOutsideClick = (e) => {
-        if (this.state.showFontSizeMenu || this.state.showColorMenu || this.state.showLinkMenu) {
-            this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false });
+        if (this.state.showFontSizeMenu || this.state.showColorMenu || this.state.showLinkMenu || this.state.showHnMenu) {
+            this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false, showHnMenu: false });
         }
     }
 
@@ -161,9 +163,7 @@ export default class VideoMeet extends Component {
 
         if (this.editorRef.current) this.editorRef.current.focus();
         
-        if (command === 'fontSize' || command === 'foreColor' || command === 'hiliteColor' || command === 'removeFormat') {
-            this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false });
-        }
+        this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false, showHnMenu: false });
     }
 
     addLink = (e) => {
@@ -328,7 +328,17 @@ export default class VideoMeet extends Component {
                                         </div>
 
                                         <span className="vDivider"></span>
-                                        <div className="toolBtn">Hn</div>
+                                        <div className="toolBtn relativePos" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); this.setState({ showHnMenu: !this.state.showHnMenu }); }}>
+                                            Hn
+                                            {this.state.showHnMenu && (
+                                                <div className="hnSubMenu">
+                                                    <div className="hnItem h1Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h1>')}>Heading 1</div>
+                                                    <div className="hnItem h2Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h2>')}>Heading 2</div>
+                                                    <div className="hnItem h3Item" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<h3>')}>Heading 3</div>
+                                                    <div className="hnItem pItem" onMouseDown={(e) => this.applyStyle(e, 'formatBlock', '<p>')}>Paragraph <CheckIcon className="activeCheck" /></div>
+                                                </div>
+                                            )}
+                                        </div>
                                         <FormatListBulletedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertUnorderedList')} />
                                         <FormatListNumberedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertOrderedList')} />
                                         <MoreHorizIcon className="toolIcon" />
