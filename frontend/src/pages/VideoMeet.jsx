@@ -38,10 +38,9 @@ export default class VideoMeet extends Component {
             message: "",
             newMessages: 0,
             askForUsername: true,
-            username: localStorage.getItem("username") || "",
+            username: localStorage.getItem("username") || "User",
             videos: []
         }
-        this.connections = {};
     }
 
     componentDidMount() {
@@ -50,23 +49,18 @@ export default class VideoMeet extends Component {
     }
 
     setupSocketListeners = () => {
+        // CLEANUP: Remove any existing listeners first to prevent duplicates
+        socket.off('chat-message');
+
         socket.on('chat-message', (data, sender) => {
             this.setState(prevState => ({
-                // Add new messages to the FRONT of the array so they appear at the TOP
-                messages: [{ "sender": sender, "message": data }, ...prevState.messages],
-                newMessages: prevState.newMessages + 1
+                // Check if the sender is actually 'Me' (handled in sendMessage)
+                messages: [{ 
+                    "sender": sender === this.state.username ? "Me" : sender, 
+                    "message": data 
+                }, ...prevState.messages],
+                newMessages: prevState.showChat ? prevState.newMessages : prevState.newMessages + 1
             }));
-        });
-
-        socket.on('user-joined', (id, clients) => {
-            clients.forEach(clientId => {
-                if (!this.connections[clientId]) {
-                    this.connections[clientId] = new RTCPeerConnection({
-                        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-                    });
-                    // Logic for WebRTC peers...
-                }
-            });
         });
     }
 
@@ -93,12 +87,9 @@ export default class VideoMeet extends Component {
 
     sendMessage = () => {
         if (this.state.message.trim() === "") return;
+        // Only emit to socket. We let the socket listener handle the state update.
         socket.emit('chat-message', this.state.message, this.state.username);
-        // Also add our own message to the top of our list immediately
-        this.setState(prevState => ({
-            messages: [{ "sender": "Me", "message": this.state.message }, ...prevState.messages],
-            message: ""
-        }));
+        this.setState({ message: "" });
     }
 
     connect = () => this.setState({ askForUsername: false }, () => {
@@ -117,11 +108,9 @@ export default class VideoMeet extends Component {
                                 <p className="lobbySubtitle">Check your audio and video before starting.</p>
                                 <div className="lobbyActions">
                                     <TextField 
-                                        label="Username" 
-                                        variant="outlined" 
+                                        label="Username" variant="outlined" 
                                         value={this.state.username} 
                                         onChange={e => this.setState({ username: e.target.value })}
-                                        className="lobbyInput"
                                         fullWidth
                                     />
                                     <Button variant="contained" className="lobbyJoinBtn" onClick={this.connect} fullWidth>
@@ -140,10 +129,7 @@ export default class VideoMeet extends Component {
                 ) : (
                     <>
                         <header className="meetTopBar">
-                            <div className="meetBrand">
-                                <span className="zoomText">zoom</span>
-                                <span className="workplaceText">Workplace</span>
-                            </div>
+                            <div className="meetBrand"><span className="zoomText">zoom</span><span className="workplaceText">Workplace</span></div>
                             <div className="topRightActions">
                                 <SecurityIcon className="securityIcon" />
                                 <div className="viewToggle"><GridViewIcon /> <span>View</span></div>
@@ -171,12 +157,6 @@ export default class VideoMeet extends Component {
                                         {this.state.username} (You)
                                     </div>
                                 </div>
-                                {this.state.videos.map((video, index) => (
-                                    <div className="participantBox" key={index}>
-                                        <video ref={(instance) => { if (instance) instance.srcObject = video.stream; }} autoPlay className="stageVideo" />
-                                        <div className="nameTag">Participant</div>
-                                    </div>
-                                ))}
                             </div>
 
                             {(this.state.showChat || this.state.showParticipants) && (
@@ -236,8 +216,8 @@ export default class VideoMeet extends Component {
                                     <PeopleIcon className={this.state.showParticipants ? "activeBlue" : ""} />
                                     <span>Participants</span>
                                 </div>
-                                <div className="toolItem" onClick={() => this.setState({ showChat: !this.state.showChat, showParticipants: false })}>
-                                    <Badge badgeContent={this.state.newMessages} color="primary" invisible={this.state.showChat}>
+                                <div className="toolItem" onClick={() => this.setState({ showChat: !this.state.showChat, showParticipants: false, newMessages: 0 })}>
+                                    <Badge badgeContent={this.state.newMessages} color="primary" invisible={this.state.newMessages === 0 || this.state.showChat}>
                                         <ChatIcon className={this.state.showChat ? "activeBlue" : ""} />
                                     </Badge>
                                     <span>Chat</span>
