@@ -57,10 +57,13 @@ export default class VideoMeet extends Component {
     componentDidMount() {
         socket.off('chat-message');
         socket.on('chat-message', (data, sender) => {
-            this.setState(prevState => ({
-                messages: [{ "sender": sender === this.state.username ? "Me" : sender, "html": data }, ...prevState.messages],
-                newMessages: prevState.showChat ? 0 : prevState.newMessages + 1
-            }));
+            // Only add if it's not from me (since we add our own messages instantly now)
+            if (sender !== this.state.username) {
+                this.setState(prevState => ({
+                    messages: [{ "sender": sender, "html": data }, ...prevState.messages],
+                    newMessages: prevState.showChat ? 0 : prevState.newMessages + 1
+                }));
+            }
         });
     }
 
@@ -87,8 +90,14 @@ export default class VideoMeet extends Component {
         const content = this.editorRef.current.innerHTML;
         if (content.trim() === "" || content === "<br>" || content === "<div><br></div>") return;
         
+        // Instant local update to prevent "disappearing" feel
+        this.setState(prevState => ({
+            messages: [{ "sender": "Me", "html": content }, ...prevState.messages]
+        }));
+
         socket.emit('chat-message', content, this.state.username);
         this.editorRef.current.innerHTML = "";
+        this.editorRef.current.focus();
         this.updateToolbarStates();
     }
 
