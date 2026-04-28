@@ -1025,9 +1025,84 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   color: #0056d6;
 }
 
-.sendIconBox svg {
-  font-size: 1.3rem !important;
+/* Rich Text Toolbar Styles */
+.richTextActive {
+  border: 1.5px solid #0056d6 !important;
 }
+
+.richTextToolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background-color: #f1f5ff;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 8px;
+  border-radius: 6px 6px 0 0;
+}
+
+.toolBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: serif;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.toolBtn.active {
+  background-color: #d1e3ff;
+  color: #0056d6;
+}
+
+.toolBtn:hover {
+  background-color: #e0e0e0;
+}
+
+.toolIcon {
+  font-size: 1.1rem !important;
+  color: #555;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.toolIcon:hover {
+  background-color: #e0e0e0;
+}
+
+.vDivider {
+  width: 1px;
+  height: 20px;
+  background-color: #ccc;
+  margin: 0 4px;
+}
+
+.pencilBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pencilBox.activeBlue {
+  background-color: #0056d6 !important;
+  color: #fff !important;
+}
+
+.pencilBox:hover {
+  background-color: #e0e0e0;
+}
+
 
 
 
