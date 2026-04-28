@@ -160,12 +160,28 @@ export default class VideoMeet extends Component {
         e.preventDefault();
         e.stopPropagation();
         if (this.state.linkUrl.trim() === "") return;
+        
         let url = this.state.linkUrl;
         if (!url.startsWith('http://') && !url.startsWith('https://')) { url = 'https://' + url; }
-        document.execCommand('createLink', false, url);
+
+        if (this.editorRef.current) {
+            this.editorRef.current.focus();
+            const selection = window.getSelection();
+            
+            // If something is highlighted, convert it to a link
+            if (selection.toString().length > 0) {
+                document.execCommand('createLink', false, url);
+            } else {
+                // Otherwise, paste the full URL as a link at the cursor
+                const linkHtml = `<a href="${url}" target="_blank" style="color: #0b5cff; text-decoration: underline;">${url}</a>&nbsp;`;
+                document.execCommand('insertHTML', false, linkHtml);
+            }
+        }
+        
         this.setState({ showLinkMenu: false, linkUrl: '' });
-        if (this.editorRef.current) this.editorRef.current.focus();
+        this.updateToolbarStates();
     }
+
 
     sendMessage = () => {
         if (!this.editorRef.current) return;
