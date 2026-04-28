@@ -1144,11 +1144,33 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   padding-left: 44px; /* Aligned with the start of the bubble */
 }
 
-.msgContentRow {
+/* Floating Chat Styles */
+.floatingChat {
+  position: fixed !important;
+  z-index: 10000;
+  width: 400px !important;
+  height: 600px !important;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  flex-direction: column;
 }
+
+.activeBlueIcon {
+  color: #0b5cff !important;
+}
+
+.panelHeaderWhite {
+  user-select: none; /* Prevent text selection while dragging */
+}
+
+.floatingChat .panelBodyWhite {
+  flex: 1;
+  overflow-y: auto;
+}
+
 
 .msgUserAvatar {
   width: 32px;

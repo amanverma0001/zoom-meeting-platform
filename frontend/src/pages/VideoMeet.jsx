@@ -42,6 +42,10 @@ export default class VideoMeet extends Component {
             videoPresent: false,
             audioPresent: false,
             showChat: true,
+            isPoppedOut: false,
+            chatPos: { x: 50, y: 50 },
+            dragging: false,
+            rel: null, 
             showParticipants: false,
             messages: [],
             newMessages: 0,
@@ -69,12 +73,45 @@ export default class VideoMeet extends Component {
                 }), this.scrollToBottom);
             }
         });
+
+        document.addEventListener('mousemove', this.onMouseMove);
+        document.addEventListener('mouseup', this.onMouseUp);
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.messages.length !== this.state.messages.length) {
-            this.scrollToBottom();
-        }
+    componentWillUnmount() {
+        document.removeEventListener('mousemove', this.onMouseMove);
+        document.removeEventListener('mouseup', this.onMouseUp);
+    }
+
+    onMouseDown = (e) => {
+        if (!this.state.isPoppedOut) return;
+        if (e.button !== 0) return;
+        const pos = { x: e.pageX, y: e.pageY };
+        this.setState({
+            dragging: true,
+            rel: {
+                x: e.pageX - this.state.chatPos.x,
+                y: e.pageY - this.state.chatPos.y
+            }
+        });
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    onMouseUp = (e) => {
+        this.setState({ dragging: false });
+    }
+
+    onMouseMove = (e) => {
+        if (!this.state.dragging) return;
+        this.setState({
+            chatPos: {
+                x: e.pageX - this.state.rel.x,
+                y: e.pageY - this.state.rel.y
+            }
+        });
+        e.stopPropagation();
+        e.preventDefault();
     }
 
     scrollToBottom = () => {
@@ -130,7 +167,7 @@ export default class VideoMeet extends Component {
                 </header>
 
                 <main className="meetStage">
-                    <div className={`stageCenter ${this.state.showChat || this.state.showParticipants ? 'shrunkGrid' : ''}`}>
+                    <div className={`stageCenter ${(this.state.showChat && !this.state.isPoppedOut) || this.state.showParticipants ? 'shrunkGrid' : ''}`}>
                         <div className="participantBox">
                             {!this.state.videoPresent && <div className="initialAvatar">{this.state.username.charAt(0).toUpperCase()}</div>}
                             <div className="nameTag">{!this.state.audioPresent && <MicOffIcon className="micOffSmall" />}{this.state.username}</div>
@@ -138,20 +175,26 @@ export default class VideoMeet extends Component {
                     </div>
 
                     {this.state.showChat && (
-                        <div className="zoomWhitePanel">
-                            <div className="panelHeaderWhite">
+                        <div 
+                            className={`zoomWhitePanel ${this.state.isPoppedOut ? 'floatingChat' : ''}`}
+                            style={this.state.isPoppedOut ? { left: this.state.chatPos.x, top: this.state.chatPos.y } : {}}
+                        >
+                            <div className="panelHeaderWhite" onMouseDown={this.onMouseDown} style={{ cursor: this.state.isPoppedOut ? 'move' : 'default' }}>
                                 <span className="panelTitle">{this.state.username}'s Zoom Meeting</span>
-                                <div className="panelHeaderIcons"><OpenInNewIcon /><CloseIcon onClick={() => this.setState({ showChat: false })} /></div>
+                                <div className="panelHeaderIcons">
+                                    <OpenInNewIcon 
+                                        className={this.state.isPoppedOut ? "activeBlueIcon" : ""} 
+                                        onClick={() => this.setState({ isPoppedOut: !this.state.isPoppedOut, chatPos: { x: 100, y: 100 } })} 
+                                    />
+                                    <CloseIcon onClick={() => this.setState({ showChat: false, isPoppedOut: false })} />
+                                </div>
                             </div>
                             
                             <div className="panelBodyWhite">
                                 <p className="meetingGroupNotice">Messages addressed to "Meeting Group Chat" will also appear in the meeting group chat in Team Chat</p>
                                 <div className="messagesContainer">
                                     {this.state.messages.map((m, i) => {
-                                        // Chronological grouping logic:
-                                        // Show header if this is index 0 OR if the message BEFORE it (i-1) is a different sender
                                         const showHeader = (i === 0 || this.state.messages[i-1].sender !== m.sender);
-                                        
                                         return (
                                             <div key={i} className={`messageItemBubble ${!showHeader ? 'grouped' : ''}`}>
                                                 {showHeader && (
@@ -171,7 +214,6 @@ export default class VideoMeet extends Component {
                                             </div>
                                         );
                                     })}
-                                    {/* Invisible div to track the bottom of the list */}
                                     <div ref={this.messagesEndRef} />
                                 </div>
                             </div>
@@ -234,7 +276,7 @@ export default class VideoMeet extends Component {
                     </div>
                     <div className="toolGroup center">
                         <div className="toolItem"><PeopleIcon /><span>Participants</span></div>
-                        <div className="toolItem" onClick={() => this.setState({ showChat: !this.state.showChat })}><ChatIcon className={this.state.showChat ? "activeBlue" : ""} /><span>Chat</span></div>
+                        <div className="toolItem" onClick={() => this.setState({ showChat: !this.state.showChat, isPoppedOut: false })}><ChatIcon className={this.state.showChat ? "activeBlue" : ""} /><span>Chat</span></div>
                         <div className="toolItem"><FavoriteIcon /><span>React</span></div>
                         <div className="toolItem"><div className="shareIconBox"><ScreenShareIcon /></div><span>Share</span></div>
                         <div className="toolItem"><SecurityIcon /><span>Host Tools</span></div>
