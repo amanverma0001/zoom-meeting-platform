@@ -1233,33 +1233,29 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  padding: 8px 12px;
-  min-width: 320px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 6px 12px; /* Precise padding from SS */
+  min-width: 340px;
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   animation: slideUp 0.2s ease-out;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translate(-10%, 10px); }
-  to { opacity: 1; transform: translate(0, 0); }
 }
 
 .innerLinkIcon {
   color: #747487 !important;
-  font-size: 1.2rem !important;
+  font-size: 1.1rem !important;
 }
 
 .linkInput {
   flex: 1;
-  border: none;
-  outline: none;
-  font-size: 0.9rem;
+  border: none !important;
+  outline: none !important;
+  font-size: 0.95rem;
   color: #1a1a1a;
-  padding: 4px 0;
+  padding: 6px 0;
+  background: transparent;
 }
 
 .linkInput::placeholder {
@@ -1268,18 +1264,20 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 
 .confirmLinkBtn {
   text-transform: none !important;
-  background-color: #e0e0e0 !important;
+  background-color: #e8ecef !important; /* Exact light gray from SS */
   color: #747487 !important;
   border-radius: 8px !important;
-  padding: 4px 16px !important;
+  padding: 6px 16px !important;
   font-weight: 700 !important;
   font-size: 0.85rem !important;
+  min-width: 80px;
 }
 
 .confirmLinkBtn:hover {
   background-color: #0056d6 !important;
   color: #ffffff !important;
 }
+
 
 
 
