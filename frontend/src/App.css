@@ -1123,6 +1123,11 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   animation: fadeIn 0.3s ease-out;
 }
 
+.ghostSpacer {
+  background-color: transparent !important;
+  visibility: hidden;
+}
+
 .messageItemBubble.grouped {
   margin-bottom: 2px;
 }

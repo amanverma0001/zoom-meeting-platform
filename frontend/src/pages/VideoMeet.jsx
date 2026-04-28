@@ -86,7 +86,6 @@ export default class VideoMeet extends Component {
     onMouseDown = (e) => {
         if (!this.state.isPoppedOut) return;
         if (e.button !== 0) return;
-        const pos = { x: e.pageX, y: e.pageY };
         this.setState({
             dragging: true,
             rel: {
@@ -207,7 +206,9 @@ export default class VideoMeet extends Component {
                                                     </>
                                                 )}
                                                 {!showHeader && (
-                                                    <div className="msgContentRow groupedContent">
+                                                    <div className="msgContentRow">
+                                                        {/* Pixel-Perfect Ghost Spacer instead of manual padding */}
+                                                        <div className="msgUserAvatar ghostSpacer"></div>
                                                         <div className="msgBubbleContent" dangerouslySetInnerHTML={{ __html: m.html }} />
                                                     </div>
                                                 )}
