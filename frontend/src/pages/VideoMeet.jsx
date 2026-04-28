@@ -23,16 +23,10 @@ import CreateIcon from '@mui/icons-material/Create';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import GroupIcon from '@mui/icons-material/Group';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic';
-import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
-import StrikethroughSIcon from '@mui/icons-material/StrikethroughS';
-import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
-import FormatSizeIcon from '@mui/icons-material/FormatSize';
 import LinkIcon from '@mui/icons-material/Link';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import TextFormatIcon from '@mui/icons-material/TextFormat';
+import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
 import server from '../environment';
 import "../App.css"
 
@@ -47,7 +41,11 @@ export default class VideoMeet extends Component {
             audioPresent: false,
             showChat: true,
             showParticipants: false,
-            showRichText: false,
+            showRichText: true,
+            isBold: false,
+            isItalic: false,
+            isUnderline: false,
+            isStrikethrough: false,
             messages: [],
             message: "",
             newMessages: 0,
@@ -60,7 +58,11 @@ export default class VideoMeet extends Component {
         socket.off('chat-message');
         socket.on('chat-message', (data, sender) => {
             this.setState(prevState => ({
-                messages: [{ "sender": sender === this.state.username ? "Me" : sender, "message": data }, ...prevState.messages],
+                messages: [{ 
+                    "sender": sender === this.state.username ? "Me" : sender, 
+                    "message": data.text,
+                    "style": data.style 
+                }, ...prevState.messages],
                 newMessages: prevState.showChat ? 0 : prevState.newMessages + 1
             }));
         });
@@ -68,11 +70,26 @@ export default class VideoMeet extends Component {
 
     sendMessage = () => {
         if (this.state.message.trim() === "") return;
-        socket.emit('chat-message', this.state.message, this.state.username);
+        const msgData = {
+            text: this.state.message,
+            style: {
+                bold: this.state.isBold,
+                italic: this.state.isItalic,
+                underline: this.state.isUnderline,
+                strike: this.state.isStrikethrough
+            }
+        };
+        socket.emit('chat-message', msgData, this.state.username);
         this.setState({ message: "" });
     }
 
     render() {
+        const inputStyle = {
+            fontWeight: this.state.isBold ? 'bold' : 'normal',
+            fontStyle: this.state.isItalic ? 'italic' : 'normal',
+            textDecoration: `${this.state.isUnderline ? 'underline' : ''} ${this.state.isStrikethrough ? 'line-through' : ''}`.trim()
+        };
+
         return (
             <div className="meetViewPage">
                 <header className="meetTopBar">
@@ -104,7 +121,13 @@ export default class VideoMeet extends Component {
                                     {this.state.messages.map((m, i) => (
                                         <div key={i} className="messageItem">
                                             <span className="msgSender">{m.sender}</span>
-                                            <p className="msgBody">{m.message}</p>
+                                            <p className="msgBody" style={{
+                                                fontWeight: m.style?.bold ? 'bold' : 'normal',
+                                                fontStyle: m.style?.italic ? 'italic' : 'normal',
+                                                textDecoration: `${m.style?.underline ? 'underline' : ''} ${m.style?.strike ? 'line-through' : ''}`.trim()
+                                            }}>
+                                                {m.message}
+                                            </p>
                                         </div>
                                     ))}
                                 </div>
@@ -112,37 +135,34 @@ export default class VideoMeet extends Component {
 
                             <div className="panelFooterWhite">
                                 <div className="whoCanSee"><GroupIcon /> <span>Who can see your messages?</span></div>
-                                <div className={`inputBoxWrapper ${this.state.showRichText ? 'richTextActive' : ''}`}>
-                                    {this.state.showRichText && (
-                                        <div className="richTextToolbar">
-                                            <div className="toolBtn active">B</div>
-                                            <div className="toolBtn"><i>I</i></div>
-                                            <div className="toolBtn"><u>U</u></div>
-                                            <div className="toolBtn"><s>S</s></div>
-                                            <span className="vDivider"></span>
-                                            <FormatColorTextIcon className="toolIcon" />
-                                            <div className="toolBtn">Aa</div>
-                                            <LinkIcon className="toolIcon" />
-                                            <span className="vDivider"></span>
-                                            <div className="toolBtn">Hn</div>
-                                            <FormatListBulletedIcon className="toolIcon" />
-                                            <FormatListNumberedIcon className="toolIcon" />
-                                            <MoreHorizIcon className="toolIcon" />
-                                        </div>
-                                    )}
+                                <div className={`inputBoxWrapper richTextActive`}>
+                                    <div className="richTextToolbar">
+                                        <div className={`toolBtn ${this.state.isBold ? 'active' : ''}`} onClick={() => this.setState({ isBold: !this.state.isBold })}>B</div>
+                                        <div className={`toolBtn ${this.state.isItalic ? 'active' : ''}`} onClick={() => this.setState({ isItalic: !this.state.isItalic })}><i>I</i></div>
+                                        <div className={`toolBtn ${this.state.isUnderline ? 'active' : ''}`} onClick={() => this.setState({ isUnderline: !this.state.isUnderline })}><u>U</u></div>
+                                        <div className={`toolBtn ${this.state.isStrikethrough ? 'active' : ''}`} onClick={() => this.setState({ isStrikethrough: !this.state.isStrikethrough })}><s>S</s></div>
+                                        <span className="vDivider"></span>
+                                        <FormatColorTextIcon className="toolIcon" />
+                                        <div className="toolBtn">Aa</div>
+                                        <LinkIcon className="toolIcon" />
+                                        <span className="vDivider"></span>
+                                        <div className="toolBtn">Hn</div>
+                                        <FormatListBulletedIcon className="toolIcon" />
+                                        <FormatListNumberedIcon className="toolIcon" />
+                                        <MoreHorizIcon className="toolIcon" />
+                                    </div>
                                     <div className="toPill"><span>to:</span><div className="bluePill">Meeting Group Chat</div></div>
                                     <textarea 
                                         placeholder="Type message here ..." 
                                         className="chatTextArea"
+                                        style={inputStyle}
                                         value={this.state.message}
                                         onChange={(e) => this.setState({ message: e.target.value })}
                                         onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), this.sendMessage())}
                                     />
                                     <div className="inputToolbar">
                                         <div className="leftTools">
-                                            <div className={`pencilBox ${this.state.showRichText ? 'activeBlue' : ''}`} onClick={() => this.setState({ showRichText: !this.state.showRichText })}>
-                                                <CreateIcon />
-                                            </div>
+                                            <div className="pencilBox activeBlue"><CreateIcon /></div>
                                             <InsertDriveFileIcon />
                                             <EmojiEmotionsIcon />
                                             <MoreHorizIcon />
@@ -156,6 +176,7 @@ export default class VideoMeet extends Component {
                 </main>
 
                 <footer className="meetToolbar">
+                    {/* ... (Existing toolbar from your VideoMeet.jsx) */}
                     <div className="toolGroup left">
                         <div className="toolItem" onClick={() => this.setState({ audioPresent: !this.state.audioPresent })}>
                             <IconButton className={!this.state.audioPresent ? "redStatus" : ""}>{this.state.audioPresent ? <MicIcon /> : <MicOffIcon />}</IconButton>
