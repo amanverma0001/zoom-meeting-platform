@@ -169,8 +169,9 @@ export default class VideoMeet extends Component {
     }
 
     render() {
-        const colors = ['#f44336', '#ff9800', '#ffeb3b', '#4caf50', '#2196f3', '#9c27b0', '#e91e63', '#000000'];
-        const bgColors = ['#ffcdd2', '#ffe0b2', '#fff9c4', '#c8e6c9', '#bbdefb', '#e1bee7', '#f8bbd0', '#ffffff'];
+        const colors = ['#FF1744', '#FF9100', '#FFD600', '#00E676', '#2979FF', '#D500F9', '#FF4081', '#000000'];
+        const bgColors = ['#FF5252', '#FFAB40', '#FFFF00', '#69F0AE', '#448AFF', '#E040FB', '#FF80AB', '#FFFFFF'];
+
 
         return (
             <div className="meetViewPage">
