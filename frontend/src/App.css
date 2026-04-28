@@ -1073,8 +1073,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 .toolBtn.active {
-  background-color: #d1e3ff;
-  color: #0056d6;
+  background-color: #0056d6; /* Dark Blue */
+  color: #ffffff !important; /* White text for contrast */
 }
 
 .toolBtn:hover {
