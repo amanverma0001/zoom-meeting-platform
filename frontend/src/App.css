@@ -1119,7 +1119,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .messageItemBubble {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -1129,7 +1129,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 .messageItemBubble.grouped {
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .groupedContent {
@@ -1145,8 +1145,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .msgMetaRow {
   font-size: 0.75rem;
   color: #747487;
-  margin-bottom: 6px;
-  padding-left: 44px; /* Aligned with the start of the bubble */
+  margin-bottom: 4px;
+  padding-left: 44px;
 }
 
 /* Floating Chat Styles */
