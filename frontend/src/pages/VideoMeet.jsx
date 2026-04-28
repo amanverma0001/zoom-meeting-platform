@@ -134,15 +134,30 @@ export default class VideoMeet extends Component {
                             <div className="panelBodyWhite">
                                 <p className="meetingGroupNotice">Messages addressed to "Meeting Group Chat" will also appear in the meeting group chat in Team Chat</p>
                                 <div className="messagesContainer">
-                                    {this.state.messages.map((m, i) => (
-                                        <div key={i} className="messageItemBubble">
-                                            <div className="msgMetaRow">{m.sender} {m.time}</div>
-                                            <div className="msgContentRow">
-                                                <div className="msgUserAvatar">{m.sender.charAt(0).toUpperCase()}</div>
-                                                <div className="msgBubbleContent" dangerouslySetInnerHTML={{ __html: m.html }} />
+                                    {this.state.messages.map((m, i) => {
+                                        // Logic for newest-at-top grouping:
+                                        // Show header if this is index 0 OR if the message BEFORE it (i-1) is a different sender
+                                        const showHeader = (i === 0 || this.state.messages[i-1].sender !== m.sender);
+                                        
+                                        return (
+                                            <div key={i} className={`messageItemBubble ${!showHeader ? 'grouped' : ''}`}>
+                                                {showHeader && (
+                                                    <>
+                                                        <div className="msgMetaRow">{m.sender} {m.time}</div>
+                                                        <div className="msgContentRow">
+                                                            <div className="msgUserAvatar">{m.sender.charAt(0).toUpperCase()}</div>
+                                                            <div className="msgBubbleContent" dangerouslySetInnerHTML={{ __html: m.html }} />
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {!showHeader && (
+                                                    <div className="msgContentRow groupedContent">
+                                                        <div className="msgBubbleContent" dangerouslySetInnerHTML={{ __html: m.html }} />
+                                                    </div>
+                                                )}
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
 

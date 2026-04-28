@@ -1123,10 +1123,19 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   animation: fadeIn 0.3s ease-out;
 }
 
+.messageItemBubble.grouped {
+  margin-bottom: 4px; /* Tighter spacing for same-sender messages */
+}
+
+.groupedContent {
+  padding-left: 44px; /* Align bubble precisely under the previous one */
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(5px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 
 .msgMetaRow {
   font-size: 0.75rem;
