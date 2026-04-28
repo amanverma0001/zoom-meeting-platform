@@ -450,24 +450,39 @@ export default function VideoMeetComponent() {
         <div>
 
             {askForUsername === true ?
-                <div className={styles.lobbyContainer}>
-                    <h2>Enter into Lobby</h2>
-                    <div className={styles.lobbyForm}>
-                        <TextField 
-                            id="outlined-basic" 
-                            label="Username" 
-                            value={username} 
-                            onChange={e => setUsername(e.target.value)} 
-                            variant="outlined" 
-                            fullWidth
-                        />
-                        <Button variant="contained" onClick={connect}>Connect</Button>
-                    </div>
+                <div className="lobbyContainer">
+                    <div className="lobbyMain">
+                        <div className="lobbyLeft">
+                            <h2 className="lobbyTitle">Ready to join?</h2>
+                            <p className="lobbySubtitle">Check your audio and video before starting.</p>
+                            
+                            <div className="lobbyActions">
+                                <TextField 
+                                    label="Username" 
+                                    variant="outlined" 
+                                    value={username} 
+                                    onChange={e => setUsername(e.target.value)}
+                                    className="lobbyInput"
+                                    fullWidth
+                                />
+                                <Button 
+                                    variant="contained" 
+                                    className="lobbyJoinBtn"
+                                    onClick={connect}
+                                    fullWidth
+                                >
+                                    Join Meeting
+                                </Button>
+                            </div>
+                        </div>
 
-                    <div className={styles.lobbyVideoPreview}>
-                        <video ref={localVideoref} autoPlay muted></video>
+                        <div className="lobbyRight">
+                            <div className="videoPreviewWrapper">
+                                <video ref={localVideoref} autoPlay muted className="videoPreview"></video>
+                                <div className="videoBadge">Your Preview</div>
+                            </div>
+                        </div>
                     </div>
-
                 </div> :
 
 

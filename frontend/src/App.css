@@ -392,6 +392,93 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   box-shadow: 0 20px 80px rgba(255, 152, 57, 0.15);
 }
 
+/* Lobby Styles */
+.lobbyContainer {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.lobbyMain {
+  display: flex;
+  align-items: center;
+  gap: 5rem;
+  max-width: 1100px;
+  width: 100%;
+}
+
+.lobbyLeft {
+  flex: 1;
+}
+
+.lobbyTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.lobbySubtitle {
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+.lobbyActions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 350px;
+}
+
+.lobbyJoinBtn {
+  background-color: #0b5cff !important;
+  padding: 14px !important;
+  font-size: 1.1rem !important;
+  text-transform: none !important;
+  border-radius: 12px !important;
+}
+
+.lobbyRight {
+  flex: 1.5;
+  display: flex;
+  justify-content: center;
+}
+
+.videoPreviewWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+}
+
+.videoPreview {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.videoBadge {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+
 /* Authentication Page Redesign */
 .authPageContainer {
   display: flex;
