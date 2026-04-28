@@ -1,101 +1,84 @@
-![header](https://capsule-render.vercel.app/api?type=waving&color=0:8E2DE2,50:FF416C,100:F7971E&height=250&section=header&text=Amandeep%20Verma&fontSize=55&fontColor=ffffff&fontAlignY=35&desc=Full%20Stack%20Developer%20%7C%20Backend%20Focused&descSize=22&descAlignY=58&descColor=ffffff&animation=fadeIn)
+# 📽️ Zoom Workplace Platform
 
-# Hi 👋 I'm Amandeep Verma
-
-**Full Stack Web Developer | JavaScript Enthusiast | MERN Stack Developer**
-
-I'm a B.Tech Computer Science student with hands-on experience in full-stack web development, building real-world applications using the MERN stack.
-
-Currently focused on building scalable, production-ready web applications with clean UI/UX and robust backends.
+A full-stack, enterprise-grade video conferencing and real-time collaboration platform inspired by Zoom, featuring high-fidelity media handling, rich-text communication, and seamless multi-user synchronization.
 
 ---
 
-## 💻 Tech Stack:
+## 🚀 Overview
 
-**🌐 Frontend & Backend:**\
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) ![Express.js](https://img.shields.io/badge/Express.js-000000?style=flat&logo=express&logoColor=white)
+This application is a highly realistic simulation of a modern workplace communication suite. It provides a robust, interactive environment for video meetings, real-time team chat, and advanced media management.
 
-**🗄️ Database & Languages:**\
-![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white) ![SQL](https://img.shields.io/badge/SQL-4479A1?style=flat&logo=mysql&logoColor=white) ![C++](https://img.shields.io/badge/C++-00599C?style=flat&logo=cplusplus&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
-
-**🛠️ Tools & DevOps:**\
-![Git](https://img.shields.io/badge/Git-F05032?style=flat&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white) ![VS Code](https://img.shields.io/badge/VS%20Code-007ACC?style=flat&logo=visualstudiocode&logoColor=white) ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white) ![npm](https://img.shields.io/badge/npm-CB3837?style=flat&logo=npm&logoColor=white)
+*   **Real-time Communication**: Integrated Socket.io engine for instant message delivery and meeting synchronization.
+*   **High-Fidelity Media**: WebRTC-powered video and audio handling with robust hardware toggling and stability fixes.
+*   **Advanced Rich Text**: A professional-grade chat editor supporting structural headings, vibrant color palettes, and smart link insertion.
+*   **Enterprise UI/UX**: A pixel-perfect "Zoom Workplace" interface with floating panels, poppable windows, and ultra-compact layout density.
 
 ---
 
-## 📊 GitHub Stats:
+## ✨ Features
 
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=amanverma0001&show_icons=true&theme=radical&bg_color=0d1117&border_radius=10" height="200" alt="GitHub Stats" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=amanverma0001&layout=compact&theme=radical&bg_color=0d1117&border_radius=10&langs_count=10" height="200" alt="Top Languages" />
-  <br/>
-  <img src="https://streak-stats.demolab.com?user=amanverma0001&theme=radical&background=0d1117&border_radius=10" alt="GitHub Streak" />
-</p>
-
----
-
-## 🚀 About Me
-
-- 🎓 B.Tech CSE Student
-- 💻 Strong foundation in full-stack development using the MERN stack
-- 🌐 Passionate about building real-world web applications
-- 🎨 Keen eye for UI/UX design and clean, responsive interfaces
-- 🔍 Interested in building scalable and reliable web systems
+*   **💎 Advanced Rich Text Editor**: Full support for structural H1-H3 headings, neon color palettes, font scaling, and interactive hyperlink insertion.
+*   **🎥 Robust Media Engine**: Reliable camera and microphone toggling with persistent video DOM management for instant hardware response.
+*   **💬 Pro Chat Windows**: Poppable, draggable chat panels with "Force-Compact" message spacing and speaker-block grouping.
+*   **🔄 Real-time Sync**: Instant global message broadcast and participant status updates using high-performance web sockets.
+*   **🎨 Modern Design System**: Sleek dark/light mode integration with 3D glossy effects and smooth micro-animations.
+*   **📁 Persistent Storage**: Full MongoDB integration for secure user authentication, message history, and meeting logs.
 
 ---
 
-## 🧠 Skills
+## ⚙️ How It Works
 
-**Programming Languages:**\
-JavaScript, TypeScript, C++, Python, SQL
-
-**Development:**\
-React.js, Node.js, Express.js, MongoDB, REST APIs, Full-Stack Development, HTML, CSS
-
-**UI / UX:**\
-Responsive Design, Component-Based Architecture, CSS Animations, Material UI
-
-**Testing & Debugging:**\
-Test Case Design, Bug Reporting, API Testing, Workflow Testing, Edge Case Analysis
-
-**Tools & Technologies:**\
-Git, GitHub, Postman, VS Code, npm, MongoDB Atlas, ESLint
+1.  **Initialization**: The app establishes a secure handshake with the Node.js backend and initializes the Socket.io connection.
+2.  **Media Negotiation**: Upon joining, the browser requests camera/audio permissions and locks the media stream to a persistent DOM element to ensure zero-lag toggling.
+3.  **Data Flow**: Chat messages are processed through a custom rich-text engine, converted to structural HTML, and broadcasted to all meeting participants in real-time.
+4.  **UI Management**: A dynamic state-manager handles floating window coordinates, toolbar selection states, and layout density overrides.
 
 ---
 
-## 📂 Projects
+## 🛠️ Tech Stack
 
-**🔷 Zerodha Trading App Clone**
-- Built a full-stack stock trading dashboard clone inspired by Zerodha
-- Features a live Watchlist, Holdings tracker, Orders history, and Positions section
-- Implemented dark/light mode, real-time P&L tracking, and animated charts
-- Tech: React.js, Node.js, Express.js, MongoDB, Chart.js
-
----
-
-## 📌 Current Focus
-
-- Building production-ready full-stack web applications
-- Strengthening backend skills with Node.js and database design
-- Exploring advanced React patterns and performance optimization
+*   **Frontend**: React.js, Material-UI (MUI), Custom CSS-in-JS
+*   **Real-time**: Socket.io-client
+*   **Backend**: Node.js, Express.js
+*   **Database**: MongoDB (Mongoose)
+*   **Media**: WebRTC (navigator.mediaDevices)
+*   **Styling**: Vanilla CSS (Pixel-perfect Zoom overrides)
 
 ---
 
-## 🎯 Goals
+## 📂 Project Structure
 
-- Grow as a Full Stack Software Engineer
-- Work on scalable and high-impact web systems
-- Build reliable and production-ready applications
+```text
+zoom-meeting-platform/
+├── backend/
+│   ├── src/
+│   │   ├── app.js             # Express server & Socket.io initialization
+│   │   ├── controllers/       # Business logic & Socket managers
+│   │   └── routes/            # API endpoints & authentication
+│   └── .env                   # Environment configurations
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── VideoMeet.jsx  # Main Meeting & Rich-Text Engine
+│   │   │   └── Landing.jsx    # Entry portal & Meeting join logic
+│   │   ├── App.css            # Global "Zoom Workplace" design system
+│   │   └── environment.js     # API & Socket endpoint config
+│   └── public/                # Static assets & icons
+└── README.md                  # Project Documentation
+```
 
 ---
 
-⭐ Committed to writing clean, efficient code and building projects that solve real-world problems.
+## 🔐 Security & Environment
+
+Ensure you have a `.env` file in the `backend` directory containing your `MONGO_URL` and `PORT` to connect to your local or cloud MongoDB cluster.
+
+> [!IMPORTANT]
+> Do not commit `.env` files to version control.
 
 ---
 
-## 📫 Connect With Me
+## 📍 Connect & Contribute
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/amandeep-verma-8853a428a/)
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/amanverma0001)
-
+Developed with ❤️ by **Amandeep Verma**.
 📍 Saharanpur, India
