@@ -915,7 +915,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 0;
 }
 
 .messageItem {
@@ -1119,12 +1119,12 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .messageItemBubble {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   animation: fadeIn 0.3s ease-out;
 }
 
 .messageItemBubble.grouped {
-  margin-bottom: 4px; /* Tighter spacing for same-sender messages */
+  margin-bottom: 2px;
 }
 
 .groupedContent {
