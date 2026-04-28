@@ -237,7 +237,19 @@ export default class VideoMeet extends Component {
                 <main className="meetStage">
                     <div className={`stageCenter ${(this.state.showChat && !this.state.isPoppedOut) || this.state.showParticipants ? 'shrunkGrid' : ''}`}>
                         <div className="participantBox">
-                            {this.state.videoPresent ? <video ref={this.localVideoref} autoPlay muted className="localVideoFeed"></video> : <div className="initialAvatar">{this.state.username.charAt(0).toUpperCase()}</div>}
+                            {/* Keep video element in DOM so the stream stays attached */}
+                            <video 
+                                ref={this.localVideoref} 
+                                autoPlay 
+                                muted 
+                                className="localVideoFeed" 
+                                style={{ display: this.state.videoPresent ? 'block' : 'none' }}
+                            ></video>
+                            
+                            {!this.state.videoPresent && (
+                                <div className="initialAvatar">{this.state.username.charAt(0).toUpperCase()}</div>
+                            )}
+                            
                             <div className="nameTag">{!this.state.audioPresent && <MicOffIcon className="micOffSmall" />}{this.state.username}</div>
                         </div>
                     </div>
