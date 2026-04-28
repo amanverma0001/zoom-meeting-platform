@@ -1189,13 +1189,13 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   width: 550px !important;
   height: 650px !important;
   border-radius: 12px;
-}
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   border: 1px solid #e0e0e0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
+
 
 .activeBlueIcon {
   color: #0b5cff !important;
