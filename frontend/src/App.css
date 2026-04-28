@@ -1115,9 +1115,63 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   color: #fff !important;
 }
 
-.pencilBox:hover {
-  background-color: #e0e0e0;
+/* Chat Bubble Interface Styles */
+.messageItemBubble {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  animation: fadeIn 0.3s ease-out;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.msgMetaRow {
+  font-size: 0.75rem;
+  color: #747487;
+  margin-bottom: 6px;
+  padding-left: 44px; /* Aligned with the start of the bubble */
+}
+
+.msgContentRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.msgUserAvatar {
+  width: 32px;
+  height: 32px;
+  background-color: #0b5cff;
+  color: white;
+  border-radius: 8px; /* Slightly rounded squares like in SS */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.msgBubbleContent {
+  background-color: #eef4ff;
+  color: #1a1a1a;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 85%;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.msgBubbleContent b { font-weight: bold; }
+.msgBubbleContent i { font-style: italic; }
+.msgBubbleContent u { text-decoration: underline; }
+.msgBubbleContent strike { text-decoration: line-through; }
+
 
 
 

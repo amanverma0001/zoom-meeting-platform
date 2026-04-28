@@ -57,10 +57,13 @@ export default class VideoMeet extends Component {
     componentDidMount() {
         socket.off('chat-message');
         socket.on('chat-message', (data, sender) => {
-            // Only add if it's not from me (since we add our own messages instantly now)
             if (sender !== this.state.username) {
                 this.setState(prevState => ({
-                    messages: [{ "sender": sender, "html": data }, ...prevState.messages],
+                    messages: [{ 
+                        "sender": sender, 
+                        "html": data,
+                        "time": new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }, ...prevState.messages],
                     newMessages: prevState.showChat ? 0 : prevState.newMessages + 1
                 }));
             }
@@ -90,9 +93,10 @@ export default class VideoMeet extends Component {
         const content = this.editorRef.current.innerHTML;
         if (content.trim() === "" || content === "<br>" || content === "<div><br></div>") return;
         
-        // Instant local update to prevent "disappearing" feel
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
         this.setState(prevState => ({
-            messages: [{ "sender": "Me", "html": content }, ...prevState.messages]
+            messages: [{ "sender": "You", "html": content, "time": time }, ...prevState.messages]
         }));
 
         socket.emit('chat-message', content, this.state.username);
@@ -131,9 +135,12 @@ export default class VideoMeet extends Component {
                                 <p className="meetingGroupNotice">Messages addressed to "Meeting Group Chat" will also appear in the meeting group chat in Team Chat</p>
                                 <div className="messagesContainer">
                                     {this.state.messages.map((m, i) => (
-                                        <div key={i} className="messageItem">
-                                            <span className="msgSender">{m.sender}</span>
-                                            <div className="msgBody" dangerouslySetInnerHTML={{ __html: m.html }} />
+                                        <div key={i} className="messageItemBubble">
+                                            <div className="msgMetaRow">{m.sender} {m.time}</div>
+                                            <div className="msgContentRow">
+                                                <div className="msgUserAvatar">{m.sender.charAt(0).toUpperCase()}</div>
+                                                <div className="msgBubbleContent" dangerouslySetInnerHTML={{ __html: m.html }} />
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
