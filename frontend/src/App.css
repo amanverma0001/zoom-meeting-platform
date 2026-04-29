@@ -997,6 +997,15 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   line-height: 1.4;
 }
 
+.chatRichEditor ul, .chatRichEditor ol {
+  padding-left: 25px !important;
+  margin: 5px 0 !important;
+}
+
+.chatRichEditor li {
+  margin-bottom: 2px !important;
+}
+
 
 .chatRichEditor:empty:before {
   content: attr(placeholder);
@@ -1445,9 +1454,19 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 /* FORCE KILL all hidden margins from paragraphs/divs inside messages */
-.msgBubbleContent * {
+.msgBubbleContent *:not(ul):not(ol):not(li) {
   margin: 0 !important;
   padding: 0 !important;
+}
+
+.msgBubbleContent ul, .msgBubbleContent ol {
+  margin: 8px 0 !important;
+  padding-left: 20px !important;
+  list-style-position: outside !important;
+}
+
+.msgBubbleContent li {
+  margin-bottom: 4px !important;
 }
 
 

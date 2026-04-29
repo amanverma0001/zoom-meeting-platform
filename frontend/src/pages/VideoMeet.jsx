@@ -64,7 +64,9 @@ export default class VideoMeet extends Component {
                 bold: false,
                 italic: false,
                 underline: false,
-                strikeThrough: false
+                strikeThrough: false,
+                unorderedList: false,
+                orderedList: false
             }
         }
     }
@@ -147,7 +149,9 @@ export default class VideoMeet extends Component {
                 bold: document.queryCommandState('bold'),
                 italic: document.queryCommandState('italic'),
                 underline: document.queryCommandState('underline'),
-                strikeThrough: document.queryCommandState('strikeThrough')
+                strikeThrough: document.queryCommandState('strikeThrough'),
+                unorderedList: document.queryCommandState('insertUnorderedList'),
+                orderedList: document.queryCommandState('insertOrderedList')
             }
         });
     }
@@ -156,11 +160,28 @@ export default class VideoMeet extends Component {
         e.preventDefault();
         e.stopPropagation();
 
-        if (command === 'formatBlock') {
-            const tag = value.replace(/[<>]/g, '');
-            this.setState({ activeHn: tag });
-            if (this.editorRef.current) {
-                this.editorRef.current.focus();
+        if (this.editorRef.current) {
+            this.editorRef.current.focus();
+            
+            // For list commands, if the editor is empty, we sometimes need to nudge it
+            if ((command === 'insertUnorderedList' || command === 'insertOrderedList') && 
+                (this.editorRef.current.innerHTML.trim() === "" || this.editorRef.current.innerHTML === "<br>")) {
+                document.execCommand(command, false, value);
+                // If it's still empty, force a list structure
+                if (this.editorRef.current.innerHTML.trim() === "" || this.editorRef.current.innerHTML === "<br>") {
+                    const tag = command === 'insertUnorderedList' ? 'ul' : 'ol';
+                    this.editorRef.current.innerHTML = `<${tag}><li><br></li></${tag}>`;
+                    // Move cursor to the new list item
+                    const range = document.createRange();
+                    const sel = window.getSelection();
+                    range.setStart(this.editorRef.current.querySelector('li'), 0);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            } else if (command === 'formatBlock') {
+                const tag = value.replace(/[<>]/g, '');
+                this.setState({ activeHn: tag });
                 const selection = window.getSelection();
                 if (selection.toString().length === 0) {
                     const html = `<${tag}>&nbsp;</${tag}>`;
@@ -168,9 +189,9 @@ export default class VideoMeet extends Component {
                 } else {
                     document.execCommand(command, false, value);
                 }
+            } else {
+                document.execCommand(command, false, value);
             }
-        } else {
-            document.execCommand(command, false, value);
         }
 
         this.updateToolbarStates();
@@ -179,8 +200,6 @@ export default class VideoMeet extends Component {
         if (command === 'hiliteColor') this.setState({ activeBgColor: value });
         if (command === 'removeFormat') this.setState({ activeForeColor: null, activeBgColor: null, activeHn: 'p' });
 
-        if (this.editorRef.current) this.editorRef.current.focus();
-        
         this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false, showHnMenu: false });
     }
 
@@ -369,12 +388,41 @@ export default class VideoMeet extends Component {
                                                 </div>
                                             )}
                                         </div>
-                                        <FormatListBulletedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertUnorderedList')} />
-                                        <FormatListNumberedIcon className="toolIcon" onMouseDown={(e) => this.applyStyle(e, 'insertOrderedList')} />
+                                        <div className={`toolBtn ${this.state.activeStyles.unorderedList ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'insertUnorderedList')} title="Bulleted List (Ctrl+Shift+8)">
+                                            <FormatListBulletedIcon className="toolIcon" style={{ color: this.state.activeStyles.unorderedList ? 'white' : 'inherit' }} />
+                                        </div>
+                                        <div className={`toolBtn ${this.state.activeStyles.orderedList ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'insertOrderedList')} title="Numbered List (Ctrl+Shift+7)">
+                                            <FormatListNumberedIcon className="toolIcon" style={{ color: this.state.activeStyles.orderedList ? 'white' : 'inherit' }} />
+                                        </div>
                                         <MoreHorizIcon className="toolIcon" />
                                     </div>
                                     <div className="toPill"><span>to:</span><div className="bluePill">Meeting Group Chat</div></div>
-                                    <div className="chatRichEditor" contentEditable="true" ref={this.editorRef} onKeyUp={this.updateToolbarStates} onMouseUp={this.updateToolbarStates} onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), this.sendMessage())} placeholder="Type message here ..."></div>
+                                    <div 
+                                        className="chatRichEditor" 
+                                        contentEditable="true" 
+                                        ref={this.editorRef} 
+                                        onKeyUp={this.updateToolbarStates} 
+                                        onMouseUp={this.updateToolbarStates} 
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                if (!e.shiftKey) {
+                                                    // Plain Enter always sends the message
+                                                    e.preventDefault();
+                                                    this.sendMessage();
+                                                } else {
+                                                    // Shift + Enter
+                                                    const isInList = document.queryCommandState('insertUnorderedList') || document.queryCommandState('insertOrderedList');
+                                                    if (isInList) {
+                                                        // In list mode, Shift+Enter creates a new bullet item
+                                                        e.preventDefault();
+                                                        document.execCommand('insertParagraph');
+                                                    }
+                                                    // If not in list, Shift+Enter does the default (inserts <br>)
+                                                }
+                                            }
+                                        }}
+                                        placeholder="Type message here ..."
+                                    ></div>
                                     <div className="inputToolbar">
                                         <div className="leftTools"><div className="pencilBox activeBlue"><CreateIcon /></div><InsertDriveFileIcon /><EmojiEmotionsIcon /><MoreHorizIcon /></div>
                                         <div className="sendIconBox" onClick={this.sendMessage}><SendIcon /></div>
