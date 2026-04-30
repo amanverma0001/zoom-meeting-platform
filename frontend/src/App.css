@@ -1521,6 +1521,63 @@ textarea:focus,
   cursor: pointer;
 }
 
+/* More Menu Styles */
+.moreMenuSubMenu {
+  position: absolute;
+  bottom: calc(100% + 15px);
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+  padding: 12px 0;
+  animation: slideInMenu 0.2s ease-out;
+}
+
+.moreMenuTitle {
+  padding: 8px 16px 12px 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: left;
+}
+
+.moreMenuItem {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.95rem;
+  color: #333;
+  min-height: 40px;
+}
+
+.moreMenuItem:hover {
+  background-color: #f1f5ff;
+}
+
+.permissionCheck {
+  color: #747487;
+  font-size: 1.2rem !important;
+}
+
+.moreMenuItem span {
+  flex: 1;
+  text-align: left;
+  padding-left: 28px; /* Offset for when checkmark is missing */
+}
+
+/* When checkmark is present, adjust padding */
+.moreMenuItem:has(.permissionCheck) span {
+  padding-left: 0;
+}
+
 
 
 
@@ -1946,3 +2003,92 @@ textarea:focus,
   color: #0b5cff !important;
   background: rgba(11, 92, 255, 0.1) !important;
 }
+
+/* Participants Panel Styles */
+.participantsPanel {
+  background-color: #ffffff;
+}
+
+.participantItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+  transition: background 0.2s;
+  cursor: default;
+}
+
+.participantItem:hover {
+  background-color: #f8f9fa;
+}
+
+.pAvatar {
+  width: 32px;
+  height: 32px;
+  background-color: #0b5cff;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.pInfo {
+  flex: 1;
+  text-align: left;
+}
+
+.pName {
+  font-size: 0.95rem;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.pControls {
+  display: flex;
+  gap: 8px;
+  color: #747487;
+}
+
+.pMic.red, .pVid.red {
+  color: #ff4b4b !important;
+  font-size: 1.2rem !important;
+}
+
+.pFooter {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px !important;
+  background-color: #ffffff;
+  border-top: 1px solid #f0f0f0;
+}
+
+.pFooterBtn {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pFooterBtn:hover {
+  background-color: #f1f5ff;
+  border-color: #0b5cff;
+  color: #0b5cff;
+}
+
+.moreBtn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}

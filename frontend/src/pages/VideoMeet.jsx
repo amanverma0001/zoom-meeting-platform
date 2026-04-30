@@ -12,6 +12,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import PeopleIcon from '@mui/icons-material/People';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import SecurityIcon from '@mui/icons-material/Security';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import GridViewIcon from '@mui/icons-material/GridView';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -70,7 +71,10 @@ export default class VideoMeet extends Component {
             },
             showRichTextToolbar: true,
             showEmojiMenu: false,
-            activeEmojiCategory: 'smileys'
+            activeEmojiCategory: 'smileys',
+            showMoreMenu: false,
+            chatPermission: 'everyone_directly',
+            showParticipants: false
         }
     }
 
@@ -101,29 +105,41 @@ export default class VideoMeet extends Component {
     }
 
     handleOutsideClick = (e) => {
-        if (this.state.showFontSizeMenu || this.state.showColorMenu || this.state.showLinkMenu || this.state.showHnMenu || this.state.showEmojiMenu) {
-            this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false, showHnMenu: false, showEmojiMenu: false });
+        if (this.state.showFontSizeMenu || this.state.showColorMenu || this.state.showLinkMenu || this.state.showHnMenu || this.state.showEmojiMenu || this.state.showMoreMenu) {
+            this.setState({ 
+                showFontSizeMenu: false, 
+                showColorMenu: false, 
+                showLinkMenu: false, 
+                showHnMenu: false, 
+                showEmojiMenu: false,
+                showMoreMenu: false
+            });
         }
     }
 
-    getPermissions = async () => {
+    getPermissions = async (reqVideo = true, reqAudio = true) => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            this.setState({ localStream: stream, videoPresent: true, audioPresent: true }, () => {
+            
+            // Disable tracks that weren't specifically requested
+            stream.getVideoTracks().forEach(track => track.enabled = reqVideo);
+            stream.getAudioTracks().forEach(track => track.enabled = reqAudio);
+
+            this.setState({ localStream: stream, videoPresent: reqVideo, audioPresent: reqAudio }, () => {
                 if (this.localVideoref.current) this.localVideoref.current.srcObject = stream;
             });
         } catch (err) { console.error(err); }
     }
 
     handleVideo = () => {
-        if (!this.state.localStream) { this.getPermissions(); return; }
+        if (!this.state.localStream) { this.getPermissions(true, false); return; }
         const videoTrack = this.state.localStream.getVideoTracks()[0];
         videoTrack.enabled = !videoTrack.enabled;
         this.setState({ videoPresent: videoTrack.enabled });
     }
 
     handleAudio = () => {
-        if (!this.state.localStream) { this.getPermissions(); return; }
+        if (!this.state.localStream) { this.getPermissions(false, true); return; }
         const audioTrack = this.state.localStream.getAudioTracks()[0];
         audioTrack.enabled = !audioTrack.enabled;
         this.setState({ audioPresent: audioTrack.enabled });
@@ -238,6 +254,14 @@ export default class VideoMeet extends Component {
         this.setState({ showEmojiMenu: false });
     }
 
+    muteAll = () => {
+        this.setState({ audioPresent: false }, () => {
+            if (this.localVideoref.current && this.localVideoref.current.srcObject) {
+                this.localVideoref.current.srcObject.getAudioTracks().forEach(track => track.enabled = false);
+            }
+        });
+    }
+
     sendMessage = () => {
         if (!this.editorRef.current) return;
         const content = this.editorRef.current.innerHTML;
@@ -265,6 +289,13 @@ export default class VideoMeet extends Component {
         };
 
         const currentCategory = allEmojis[this.state.activeEmojiCategory] || allEmojis.smileys;
+
+        const toggleParticipants = () => {
+            this.setState({ 
+                showParticipants: !this.state.showParticipants,
+                showChat: false // Auto-close chat if participants open
+            });
+        };
 
         const isOnlyEmojis = (html) => {
             const plainText = html.replace(/<[^>]*>?/gm, '').trim();
@@ -303,6 +334,35 @@ export default class VideoMeet extends Component {
                             <div className="nameTag">{!this.state.audioPresent && <MicOffIcon className="micOffSmall" />}{this.state.username}</div>
                         </div>
                     </div>
+
+                    {this.state.showParticipants && (
+                        <div className="zoomWhitePanel participantsPanel">
+                            <div className="panelHeaderWhite">
+                                <span className="panelTitle">Participants (1)</span>
+                                <div className="panelHeaderIcons">
+                                    <OpenInNewIcon className="popOutIcon" />
+                                    <CloseIcon className="closeIcon" onClick={() => this.setState({ showParticipants: false })} />
+                                </div>
+                            </div>
+                            <div className="panelBodyWhite">
+                                <div className="participantItem">
+                                    <div className="pAvatar">A</div>
+                                    <div className="pInfo">
+                                        <span className="pName">{this.state.username} (Host, me)</span>
+                                    </div>
+                                    <div className="pControls">
+                                        {this.state.audioPresent ? <MicIcon className="pMic" /> : <MicOffIcon className="pMic red" />}
+                                        {this.state.videoPresent ? <VideocamIcon className="pVid" /> : <VideocamOffIcon className="pVid red" />}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="panelFooterWhite pFooter">
+                                <div className="pFooterBtn">Invite</div>
+                                <div className="pFooterBtn" onClick={this.muteAll}>Mute All</div>
+                                <div className="pFooterBtn moreBtn">More <ArrowDropUpIcon /></div>
+                            </div>
+                        </div>
+                    )}
 
                     {this.state.showChat && (
                         <div className={`zoomWhitePanel ${this.state.isPoppedOut ? 'floatingChat' : ''}`} style={this.state.isPoppedOut ? { left: this.state.chatPos.x, top: this.state.chatPos.y } : {}}>
@@ -504,7 +564,33 @@ export default class VideoMeet extends Component {
                                                     </div>
                                                 )}
                                             </div>
-                                            <MoreHorizIcon />
+                                            <div className="relativePos">
+                                                <MoreHorizIcon 
+                                                    className={`moreToggle ${this.state.showMoreMenu ? 'activeBlueIcon' : ''}`}
+                                                    onClick={() => this.setState({ showMoreMenu: !this.state.showMoreMenu })}
+                                                />
+                                                {this.state.showMoreMenu && (
+                                                    <div className="moreMenuSubMenu" onMouseDown={(e) => e.stopPropagation()}>
+                                                        <div className="moreMenuTitle">Participants Can Chat with:</div>
+                                                        <div className="moreMenuItem" onClick={() => this.setState({ chatPermission: 'no_one', showMoreMenu: false })}>
+                                                            {this.state.chatPermission === 'no_one' && <CheckIcon className="permissionCheck" />}
+                                                            <span>No one</span>
+                                                        </div>
+                                                        <div className="moreMenuItem" onClick={() => this.setState({ chatPermission: 'host_only', showMoreMenu: false })}>
+                                                            {this.state.chatPermission === 'host_only' && <CheckIcon className="permissionCheck" />}
+                                                            <span>Host and co-hosts</span>
+                                                        </div>
+                                                        <div className="moreMenuItem" onClick={() => this.setState({ chatPermission: 'everyone', showMoreMenu: false })}>
+                                                            {this.state.chatPermission === 'everyone' && <CheckIcon className="permissionCheck" />}
+                                                            <span>Everyone</span>
+                                                        </div>
+                                                        <div className="moreMenuItem" onClick={() => this.setState({ chatPermission: 'everyone_directly', showMoreMenu: false })}>
+                                                            {this.state.chatPermission === 'everyone_directly' && <CheckIcon className="permissionCheck" />}
+                                                            <span>Everyone and anyone directly</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                         <div className="sendIconBox" onClick={this.sendMessage}><SendIcon /></div>
                                     </div>
@@ -520,8 +606,14 @@ export default class VideoMeet extends Component {
                         <div className="toolItem" onClick={this.handleVideo}><IconButton className={!this.state.videoPresent ? "redStatus" : ""}>{this.state.videoPresent ? <VideocamIcon /> : <VideocamOffIcon />}</IconButton><span>{this.state.videoPresent ? "Stop Video" : "Start Video"}</span></div>
                     </div>
                     <div className="toolGroup center">
-                        <div className="toolItem"><PeopleIcon /><span>Participants</span></div>
-                        <div className="toolItem" onClick={() => this.setState({ showChat: !this.state.showChat, isPoppedOut: false })}><ChatIcon className={this.state.showChat ? "activeBlue" : ""} /><span>Chat</span></div>
+                        <div className="toolItem" onClick={toggleParticipants}>
+                            <PeopleIcon className={this.state.showParticipants ? "activeBlue" : ""} />
+                            <span>Participants</span>
+                        </div>
+                        <div className="toolItem" onClick={() => this.setState({ showChat: !this.state.showChat, showParticipants: false, isPoppedOut: false })}>
+                            <ChatIcon className={this.state.showChat ? "activeBlue" : ""} />
+                            <span>Chat</span>
+                        </div>
                         <div className="toolItem"><FavoriteIcon /><span>React</span></div>
                         <div className="toolItem"><div className="shareIconBox"><ScreenShareIcon /></div><span>Share</span></div>
                         <div className="toolItem"><SecurityIcon /><span>Host Tools</span></div>
