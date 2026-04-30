@@ -68,7 +68,9 @@ export default class VideoMeet extends Component {
                 unorderedList: false,
                 orderedList: false
             },
-            showRichTextToolbar: true
+            showRichTextToolbar: true,
+            showEmojiMenu: false,
+            activeEmojiCategory: 'smileys'
         }
     }
 
@@ -99,8 +101,8 @@ export default class VideoMeet extends Component {
     }
 
     handleOutsideClick = (e) => {
-        if (this.state.showFontSizeMenu || this.state.showColorMenu || this.state.showLinkMenu || this.state.showHnMenu) {
-            this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false, showHnMenu: false });
+        if (this.state.showFontSizeMenu || this.state.showColorMenu || this.state.showLinkMenu || this.state.showHnMenu || this.state.showEmojiMenu) {
+            this.setState({ showFontSizeMenu: false, showColorMenu: false, showLinkMenu: false, showHnMenu: false, showEmojiMenu: false });
         }
     }
 
@@ -228,6 +230,14 @@ export default class VideoMeet extends Component {
         this.updateToolbarStates();
     }
 
+    addEmoji = (emoji) => {
+        if (this.editorRef.current) {
+            this.editorRef.current.focus();
+            document.execCommand('insertText', false, emoji);
+        }
+        this.setState({ showEmojiMenu: false });
+    }
+
     sendMessage = () => {
         if (!this.editorRef.current) return;
         const content = this.editorRef.current.innerHTML;
@@ -243,6 +253,26 @@ export default class VideoMeet extends Component {
     render() {
         const colors = ['#FF1744', '#FF9100', '#FFD600', '#00E676', '#2979FF', '#D500F9', '#FF4081', '#000000'];
         const bgColors = ['#FF5252', '#FFAB40', '#FFFF00', '#69F0AE', '#448AFF', '#E040FB', '#FF80AB', '#FFFFFF'];
+        const allEmojis = {
+            smileys: { label: 'Smileys & People', icons: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯'] },
+            animals: { label: 'Animals & Nature', icons: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆', '🦅', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟', '🐢', '🐍', '🦎', '🦖', '🐙', '🦑', '🦐', '🦞', '🦀', '🐡', '🐠', '🐟', '🐬', '🐳', '🐋', '🦈', '🐊', '🐅', '🐆', '🦓', '🐘', '🦏', '🦛', '🐪', '🐫', '🦒', '🦘', '🐃', '🐂', '🐄', '🐎', '🐖', '🐏', '🐑', '🐐', '🦌', '🐕', '🐩', '🐈', '🐓', '🦃', '🦜', '🦢', '🦚', '🕊', '🐇', '🐁', '🐀', '🐿', '🦔', '🐾', '🐉', '🐲', '🌵', '🎄', '🌲', '🌳', '🌴', '🌱', '🌿', '☘️', '🍀', '🎍', '🎋', '🍃', '🍂', '🍁', '🍄', '🐚', '🌾', '💐', '🌷', '🌹', '🥀', '🌺', '🌸', '🌼', '🌻', '🌞', '🌝', '🌛', '🌜', '🌚', '🌕', '🌖', '🌗', '🌘', '🌑', '🌒', '🌓', '🌔', '🌙', '🌎', '🌍', '🌏', '🪐', '💫', '⭐️', '🌟', '✨', '⚡️', '☄️', '💥', '🔥', '🌪', '🌈', '☀️', '🌤', '⛅️', '🌥', '☁️', '🌦', '🌧', '⛈', '🌩', '🌨', '❄️', '☃️', '⛄️', '🌬', '💨', '💧', '💦', '☔️', '☂️', '🌊', '🌫'] },
+            food: { label: 'Food & Drink', icons: ['🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥬', '🥒', '🌽', '🥕', '🥔', '🍠', '🥐', '🍞', '🥖', '🥨', '🥯', '🧀', '🍖', '🍗', '🥩', '🥓', '🍔', '🍟', '🍕', '🌭', '🥪', '🌮', '🌯', '🍳', '🥘', '🍲', '🥣', '🥗', '🍿', '🧂', '🥫', '🍱', '🍘', '🍙', '🍚', '🍛', '🍜', '🍝', '🍠', '🍢', '🍣', '🍤', '🍥', '🥮', '🍡', '🥟', '🥠', '🥡', '🍦', '🍧', '🍨', '🍩', '🍪', '🎂', '🍰', '🧁', '🥧', '🍫', '🍬', '🍭', '🍮', '🍯', '🍼', '🥛', '☕️', '🍵', '🧉', '🥤', '🍶', '🍺', '🍻', '🥂', '🍷', '🥃', '🍸', '🍹', '🧉', '🍾', '🧊', '🥄', '🍴', '🍽', '🥣', '🥡'] },
+            activities: { label: 'Activities', icons: ['⚽️', '🏀', '🏈', '⚾️', '🥎', '🎾', '🏐', '🏉', '🎱', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🥅', '⛳️', '🏹', '🎣', '🤿', '🥊', '🥋', '⛸', '🎿', '🛷', '🛹', '🛼', '🏋️‍♀️', '🤼‍♂️', '🤸‍♀️', '⛹️‍♂️', '🤺', '🤾‍♂️', '🏌️‍♂️', '🏇', '🧘‍♀️', '🏄‍♂️', '🏊‍♂️', '🤽‍♂️', '🚣‍♂️', '🧗‍♂️', '🚵‍♂️', '🚴‍♂️', '🏆', '🥇', '🥈', '🥉', '🏅', '🎖', '🏵', '🎫', '🎟', '🎭', '🎨', '🎬', '🎤', '🎧', '🎼', '🎹', '🥁', '🎷', '🎺', '🎸', '🎻', '🎮', '🕹', '🎰', '🎲', '🧩', '🧸', '♠️', '♥️', '♦️', '♣️', '♟', '🃏', '🀄️', '🎴'] },
+            travel: { label: 'Travel & Places', icons: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎', '🚓', '🚑', '🚒', '🚐', '🚚', '🚛', '🚜', '🛵', '🚲', '🛴', '🛹', '🛺', '⛽️', '🚨', '🚥', '🚦', '🛑', '🚧', '⚓️', '⛵️', '🛶', '🚤', '🛳', '⛴', '🚢', '✈️', '🛩', '🛫', '🛬', '🪂', '💺', '🚁', '🚟', '🚠', '🚡', '🛰', '🚀', '🛸', '🛎', '🧳', '⌛️', '⏳', '⌚️', '⏰', '⏱', '⏲', '🕰', '🌡', '☀️', '🌝', '🌚', '🌙', '☁️', '🌧', '⛈', '🌩', '❄️', '🔥', '💧', '🌊', '🌋', '⛰', '🏔', '🗻', '🏕', '🏖', '🏜', '🏝', '🏞', '🏟', '🏛', '🏗', '🧱', '🏘', '🏚', '🏠', '🏡', '🏢', '🏣', '🏤', '🏥', '🏦', '🏨', '🏪', '🏫', '🏬', '🏭', '🏮', '🏯', '🏰', '💒', '🗼', '🗽', '🕌', '🕍', '⛩', '🕋', '⛲️', '⛺️', '🌁', '🌃', '🏙', '🌄', '🌅', '🌆', '🌇', '🌉', '🎠', '🎡', '🎢', '🚂', '🚃', '🚄', '🚅', '🚆', '🚇', '🚈', '🚉', '🚊', '🚝', '🚞', '🚋', '🚌', '🚍', '🚎', '🚐', '🚑', '🚒', '🚓', '🚔', '🚕', '🚖', '🚗', '🚘', '🚙', '🚚', '🚛', '🚜', '🚲', '🛵', '🏍', '🛴', '🚨', '🚥', '🚦', '🛑', '🚧', '⚓️', '⛵️', '🛶', '🚤', '🛳', '⛴', '🚢', '✈️', '🛫', '🛬', '💺', '🚁', '🚟', '🚠', '🚡', '🚀', '🛸', '⌛️', '⏳', '⌚️', '⏰', '⏱', '⏲', '🕰', '📡'] },
+            objects: { label: 'Objects', icons: ['⌚️', '📱', '📲', '💻', '⌨️', '🖱', '🖲', '🕹', '🗜', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽', '🎞', '📞', '☎️', '📟', '📠', '📺', '📻', '🎙', '🎚', '🎛', '🧭', '⏱', '⏲', '⏰', '🕰', '⏳', '⌛️', '📡', '🔋', '🔌', '💡', '🔦', '🕯', '🪔', '🧯', '🛢', '💸', '💵', '💴', '💶', '💷', '💰', '💳', '💎', '⚖️', '🧰', '🔧', '🔨', '⚒', '🛠', '⛏', '🔩', '⚙️', '🧱', '⛓', '🧲', '🔫', '💣', '🧨', '🪓', '🔪', '🗡', '⚔️', '🛡', '🚬', '⚰️', '⚱️', '🏺', '🔮', '📿', '🧿', '💈', '⚗️', '🔭', '🔬', '🕳', '💊', '💉', '🩸', '🧬', '🦠', '🌡', '🧹', '🧺', '🧻', '🚽', '🚰', '🚿', '🛁', '🧼', '🪒', '🧽', '🧴', '🛎', '🔑', '🗝', '🚪', '🪑', '🛋', '🛏', '🛌', '🧸', '🖼', '🛍', '🛒', '🎁', '🎈', '🎏', '🎀', '🎊', '🎉', '🎎', '🏮', '🎐', '🧧', '✉️', '📩', '📧', '📨', '📤', '📥', '📦', '🏷', '📁', '📂', '🗂', '📅', '📆', '🗒', '🗓', '📇', '📈', '📉', '📊', '📋', '📌', '📍', '📎', '🖇', '📏', '📐', '✂️', '🗃', '🗄', '🗑', '🔒', '🔓', '🔏', '🔐', '🔑', '🗝', '🔨', '🪓', '⛏', '⚒', '🛠', '🗡', '⚔️', '🔫', '🏹', '🛡', '🔧', '🔩', '⚙️', '🗜', '⚖️', '🦯', '🔗', '⛓', '🧰', '🧲', '⚗️', '🧪', '🧫', '🧬', '🔬', '🔭', '📡', '💉', '🩸', '💊', '🩹', '🩺', '🚪', '🛏', '🛋', '🪑', '🚽', '🚿', '🛁', '🪒', '🧴', '🧷', '🧹', '🧺', '🧻', '🧼', '🧽', '🧯', '🛒', '🚬', '⚰️', '⚱️', '🗿'] },
+            symbols: { label: 'Symbols', icons: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️', '✝️', '☪️', '🕉', '☸️', '✡️', '🔯', '🕎', '☯️', '☦️', '🛐', '⛎', '♈️', '♉️', '♊️', '♋️', '♌️', '♍️', '♎️', '♏️', '♐️', '♑️', '♒️', '♓️', '🆔', '⚛️', '🉑', '☢️', '☣️', '📴', '📳', '🈶', '🈚️', '🈸', '🈺', '🈷️', '✴️', '🆚', '💮', '🉐', '㊙️', '㊗️', '🈴', '🈵', '🈹', '🈲', '🅰️', '🅱️', '🆑', '🆒', '🆓', 'ℹ️', '🆔', 'Ⓜ️', '🆕', '🆖', '🅾️', '🆗', '🅿️', '🆘', '🆙', '🆚', '🈁', '🈂️', '🈷️', '🈶', '🈯️', '🉐', '🈹', '🈚️', '🈲', '🉑', '🈸', '🈴', '🈳', '㊗️', '㊙️', '🈺', '🈵', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '🟤', '⚫️', '⚪️', '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '🟫', '⬛️', '⬜️', '◼️', '◻️', '◾️', '◽️', '▪️', '▫️', '🔶', '🔷', '🔸', '🔹', '🔺', '🔻', '💠', '🔘', '🔳', '🔲'] },
+            flags: { label: 'Flags', icons: ['🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏴‍☠️', '🇦🇫', '🇦🇽', '🇦🇱', '🇩🇿', '🇦🇸', '🇦🇩', '🇦🇴', '🇦🇮', '🇦🇶', '🇦🇬', '🇦🇷', '🇦🇲', '🇦🇼', '🇦🇺', '🇦🇹', '🇦🇿', '🇧🇸', '🇧🇭', '🇧🇩', '🇧🇧', '🇧🇾', '🇧🇪', '🇧🇿', '🇧🇯', '🇧🇲', '🇧🇹', '🇧🇴', '🇧🇦', '🇧🇼', '🇧🇷', '🇮🇴', '🇻🇬', '🇧🇳', '🇧🇬', '🇧🇫', '🇧🇮', '🇰🇭', '🇨🇲', '🇨🇦', '🇮🇨', '🇨🇻', '🇧🇶', '🇰🇾', '🇨🇫', '🇹🇩', '🇨🇱', '🇨🇳', '🇨🇽', '🇨🇨', '🇨🇴', '🇰🇲', '🇨🇬', '🇨🇩', '🇨🇰', '🇨🇷', '🇨🇮', '🇭🇷', '🇨🇺', '🇨🇼', '🇨🇾', '🇨🇿', '🇩🇰', '🇩🇯', '🇩🇲', '🇩🇴', '🇪🇨', '🇪🇬', '🇸🇻', '🇬🇶', '🇪🇷', '🇪🇪', '🇪🇹', '🇪🇺', '🇫🇰', '🇫🇴', '🇫🇯', '🇫🇮', '🇫🇷', '🇬🇫', '🇵🇫', '🇹🇫', '🇬🇦', '🇬🇲', '🇬🇪', '🇩🇪', '🇬🇭', '🇬🇮', '🇬🇷', '🇬🇱', '🇬🇩', '🇬🇵', '🇬🇺', '🇬🇹', '🇬🇬', '🇬🇳', '🇬🇼', '🇬🇾', '🇭🇹', '🇭🇳', '🇭🇰', '🇭🇺', '🇮🇸', '🇮🇳', '🇮🇩', '🇮🇷', '🇮🇶', '🇮🇪', '🇮🇲', '🇮🇱', '🇮🇹', '🇯🇲', '🇯🇵', '🇯🇪', '🇯🇴', '🇰🇿', '🇰🇪', '🇰🇮', '🇽🇰', '🇰🇼', '🇰🇬', '🇱🇦', '🇱🇻', '🇱🇧', '🇱🇸', '🇱🇷', '🇱🇾', '🇱🇮', '🇱🇹', '🇱🇺', '🇲🇴', '🇲🇰', '🇲🇬', '🇲🇼', '🇲🇾', '🇲🇻', '🇲🇱', '🇲🇹', '🇲🇭', '🇲🇶', '🇲🇷', '🇲🇺', '🇾🇹', '🇲🇽', '🇫🇲', '🇲🇩', '🇲🇨', '🇲🇳', '🇲🇪', '🇲🇸', '🇲🇦', '🇲🇿', '🇲🇲', '🇳🇦', '🇳🇷', '🇳🇵', '🇳🇱', '🇳🇨', '🇳🇿', '🇳🇮', '🇳🇪', '🇳🇬', '🇳🇺', '🇳🇫', '🇰🇵', '🇲🇵', '🇳🇴', '🇴🇲', '🇵🇰', '🇵🇼', '🇵🇸', '🇵🇦', '🇵🇬', '🇵🇾', '🇵🇪', '🇵🇭', '🇵🇳', '🇵🇱', '🇵🇹', '🇵🇷', '🇶🇦', '🇷🇪', '🇷🇴', '🇷🇺', '🇷🇼', '🇼🇸', '🇸🇲', '🇸🇦', '🇸🇳', '🇷🇸', '🇸🇨', '🇸🇱', '🇸🇬', '🇸🇽', '🇸🇰', '🇸🇮', '🇬🇸', '🇸🇧', '🇸🇴', '🇿🇦', '🇰🇷', '🇸🇸', '🇪🇸', '🇱🇰', '🇧🇱', '🇸🇭', '🇰🇳', '🇱🇨', '🇵🇲', '🇻🇨', '🇸🇩', '🇸🇷', '🇸🇿', '🇸🇪', '🇨🇭', '🇸🇾', '🇹🇼', '🇹🇯', '🇹🇿', '🇹🇭', '🇹🇱', '🇹🇬', '🇹🇰', '🇹🇴', '🇹🇹', '🇹🇳', '🇹🇷', '🇹🇲', '🇹🇨', '🇹🇻', '🇻🇮', '🇺🇬', '🇺🇦', '🇦🇪', '🇬🇧', '🏴󠁧󠁢󠁥󠁮󠁧󠁿', '🏴󠁧󠁢󠁳󠁣󠁴󠁿', '🏴󠁧󠁢󠁷󠁬󠁳󠁿', '🇺🇸', '🇺🇾', '🇺🇿', '🇻🇺', '🇻🇦', '🇻🇪', '🇻🇳', '🇼🇫', '🇪🇭', '🇾🇪', '🇿🇲', '🇿🇼'] }
+        };
+
+        const currentCategory = allEmojis[this.state.activeEmojiCategory] || allEmojis.smileys;
+
+        const isOnlyEmojis = (html) => {
+            const plainText = html.replace(/<[^>]*>?/gm, '').trim();
+            if (plainText.length === 0) return false;
+            // Matches emojis and spaces
+            const emojiRegex = /^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|\s)+$/;
+            return emojiRegex.test(plainText);
+        };
 
         return (
             <div className="meetViewPage">
@@ -296,14 +326,14 @@ export default class VideoMeet extends Component {
                                                         <div className="msgMetaRow">{m.sender} {m.time}</div>
                                                         <div className="msgContentRow">
                                                             <div className="msgUserAvatar">{m.sender.charAt(0).toUpperCase()}</div>
-                                                            <div className="msgBubbleContent" dangerouslySetInnerHTML={{ __html: m.html }} />
+                                                            <div className={`msgBubbleContent ${isOnlyEmojis(m.html) ? 'bigEmojiMsg' : ''}`} dangerouslySetInnerHTML={{ __html: m.html }} />
                                                         </div>
                                                     </>
                                                 )}
                                                 {!showHeader && (
                                                     <div className="msgContentRow">
                                                         <div className="msgUserAvatar ghostSpacer"></div>
-                                                        <div className="msgBubbleContent" dangerouslySetInnerHTML={{ __html: m.html }} />
+                                                        <div className={`msgBubbleContent ${isOnlyEmojis(m.html) ? 'bigEmojiMsg' : ''}`} dangerouslySetInnerHTML={{ __html: m.html }} />
                                                     </div>
                                                 )}
                                             </div>
@@ -434,8 +464,46 @@ export default class VideoMeet extends Component {
                                             >
                                                 <CreateIcon />
                                             </div>
-                                            <InsertDriveFileIcon />
-                                            <EmojiEmotionsIcon />
+                                            <div className="relativePos">
+                                                <EmojiEmotionsIcon 
+                                                    className={`emojiToggle ${this.state.showEmojiMenu ? 'activeBlueIcon' : ''}`}
+                                                    onClick={() => this.setState({ showEmojiMenu: !this.state.showEmojiMenu })}
+                                                />
+                                                {this.state.showEmojiMenu && (
+                                                    <div className="emojiPickerSubMenu" onMouseDown={(e) => e.stopPropagation()}>
+                                                        <div className="emojiHeader">
+                                                            <div className="emojiTabs">
+                                                                <EmojiEmotionsIcon 
+                                                                    className={`tabIcon ${this.state.activeEmojiCategory === 'smileys' ? 'activeTab' : ''}`} 
+                                                                    onClick={() => this.setState({ activeEmojiCategory: 'smileys' })}
+                                                                />
+                                                                <span className={`tabIcon ${this.state.activeEmojiCategory === 'animals' ? 'activeTab' : ''}`} onClick={() => this.setState({ activeEmojiCategory: 'animals' })}>🐻</span>
+                                                                <span className={`tabIcon ${this.state.activeEmojiCategory === 'food' ? 'activeTab' : ''}`} onClick={() => this.setState({ activeEmojiCategory: 'food' })}>🍔</span>
+                                                                <span className={`tabIcon ${this.state.activeEmojiCategory === 'activities' ? 'activeTab' : ''}`} onClick={() => this.setState({ activeEmojiCategory: 'activities' })}>⚽</span>
+                                                                <span className={`tabIcon ${this.state.activeEmojiCategory === 'travel' ? 'activeTab' : ''}`} onClick={() => this.setState({ activeEmojiCategory: 'travel' })}>🚀</span>
+                                                                <span className={`tabIcon ${this.state.activeEmojiCategory === 'objects' ? 'activeTab' : ''}`} onClick={() => this.setState({ activeEmojiCategory: 'objects' })}>💡</span>
+                                                                <span className={`tabIcon ${this.state.activeEmojiCategory === 'symbols' ? 'activeTab' : ''}`} onClick={() => this.setState({ activeEmojiCategory: 'symbols' })}>💕</span>
+                                                                <span className={`tabIcon ${this.state.activeEmojiCategory === 'flags' ? 'activeTab' : ''}`} onClick={() => this.setState({ activeEmojiCategory: 'flags' })}>🚩</span>
+                                                            </div>
+                                                            <div className="emojiSearchBox">
+                                                                <input type="text" placeholder="Search emojis" className="emojiSearchInput" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="emojiSectionLabel">{currentCategory.label}</div>
+                                                        <div className="emojiGrid">
+                                                            {currentCategory.icons.map((emoji, idx) => (
+                                                                <div key={idx} className="emojiUnit" onClick={() => this.addEmoji(emoji)}>
+                                                                    {emoji}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        <div className="emojiFooter">
+                                                            <span className="skinToneText">Change Skin Tone </span>
+                                                            <span className="skinToneEmoji">👍</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <MoreHorizIcon />
                                         </div>
                                         <div className="sendIconBox" onClick={this.sendMessage}><SendIcon /></div>

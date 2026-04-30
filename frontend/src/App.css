@@ -1403,6 +1403,124 @@ textarea:focus,
   color: #ffffff !important;
 }
 
+/* Emoji Picker Styles */
+.emojiPickerSubMenu {
+  position: absolute;
+  bottom: calc(100% + 15px);
+  left: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  max-height: 450px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+  padding: 12px;
+  animation: slideInMenu 0.2s ease-out;
+}
+
+.emojiHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.emojiTabs {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5px;
+  color: #747487;
+  font-size: 1.1rem;
+  align-items: center;
+}
+
+.tabIcon {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.tabIcon:hover, .activeTab {
+  opacity: 1;
+  color: #0b5cff;
+}
+
+.activeTab {
+  font-size: 1.3rem !important;
+}
+
+.emojiSearchBox {
+  background: #f1f5ff;
+  border-radius: 8px;
+  padding: 0 12px;
+}
+
+.emojiSearchInput {
+  border: none !important;
+  background: transparent !important;
+  width: 100%;
+  padding: 8px 0 !important;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  outline: none !important;
+}
+
+.emojiSectionLabel {
+  font-size: 0.85rem;
+  color: #747487;
+  margin-bottom: 12px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.emojiGrid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  overflow-y: auto;
+  max-height: 250px;
+  padding-right: 5px;
+}
+
+.emojiUnit {
+  font-size: 1.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 4px;
+  transition: all 0.2s;
+}
+
+.emojiUnit:hover {
+  background-color: #f1f5ff;
+  transform: scale(1.2);
+}
+
+.emojiFooter {
+  border-top: 1px solid #f0f0f0;
+  margin-top: 12px;
+  padding-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.skinToneText {
+  font-size: 0.85rem;
+  color: #747487;
+}
+
+.skinToneEmoji {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
 
 
 
@@ -1522,6 +1640,14 @@ textarea:focus,
   max-width: 85%;
   word-wrap: break-word;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.bigEmojiMsg {
+  font-size: 3rem !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  padding: 4px 0 !important;
+  line-height: 1.2 !important;
 }
 
 /* FORCE KILL all hidden margins from paragraphs/divs inside messages */
