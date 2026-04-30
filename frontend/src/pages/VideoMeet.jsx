@@ -67,7 +67,8 @@ export default class VideoMeet extends Component {
                 strikeThrough: false,
                 unorderedList: false,
                 orderedList: false
-            }
+            },
+            showRichTextToolbar: true
         }
     }
 
@@ -314,8 +315,9 @@ export default class VideoMeet extends Component {
 
                             <div className="panelFooterWhite">
                                 <div className="whoCanSee"><GroupIcon /> <span>Who can see your messages?</span></div>
-                                <div className="inputBoxWrapper richTextActive">
-                                    <div className="richTextToolbar">
+                                <div className={`inputBoxWrapper ${this.state.showRichTextToolbar ? 'richTextActive' : ''}`}>
+                                    {this.state.showRichTextToolbar && (
+                                        <div className="richTextToolbar">
                                         <div className={`toolBtn ${this.state.activeStyles.bold ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'bold')}>B</div>
                                         <div className={`toolBtn ${this.state.activeStyles.italic ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'italic')}><i>I</i></div>
                                         <div className={`toolBtn ${this.state.activeStyles.underline ? 'active' : ''}`} onMouseDown={(e) => this.applyStyle(e, 'underline')}><u>U</u></div>
@@ -396,6 +398,7 @@ export default class VideoMeet extends Component {
                                         </div>
                                         <MoreHorizIcon className="toolIcon" />
                                     </div>
+                                    )}
                                     <div className="toPill"><span>to:</span><div className="bluePill">Meeting Group Chat</div></div>
                                     <div 
                                         className="chatRichEditor" 
@@ -424,7 +427,17 @@ export default class VideoMeet extends Component {
                                         placeholder="Type message here ..."
                                     ></div>
                                     <div className="inputToolbar">
-                                        <div className="leftTools"><div className="pencilBox activeBlue"><CreateIcon /></div><InsertDriveFileIcon /><EmojiEmotionsIcon /><MoreHorizIcon /></div>
+                                        <div className="leftTools">
+                                            <div 
+                                                className={`pencilBox ${this.state.showRichTextToolbar ? 'activeBlue' : ''}`} 
+                                                onClick={() => this.setState({ showRichTextToolbar: !this.state.showRichTextToolbar })}
+                                            >
+                                                <CreateIcon />
+                                            </div>
+                                            <InsertDriveFileIcon />
+                                            <EmojiEmotionsIcon />
+                                            <MoreHorizIcon />
+                                        </div>
                                         <div className="sendIconBox" onClick={this.sendMessage}><SendIcon /></div>
                                     </div>
                                 </div>

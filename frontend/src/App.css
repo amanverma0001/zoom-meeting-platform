@@ -27,7 +27,9 @@ body {
 }
 
 /* Single border for all text boxes */
-input, textarea, .MuiInputBase-root {
+input,
+textarea,
+.MuiInputBase-root {
   color: var(--text-main) !important;
   background: var(--bg-card) !important;
   border: 1.5px solid var(--text-dim) !important;
@@ -50,7 +52,9 @@ input, textarea, .MuiInputBase-root {
   border: none !important;
 }
 
-input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
+input:focus,
+textarea:focus,
+.MuiInputBase-root.Mui-focused {
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 2px rgba(255, 152, 57, 0.1);
 }
@@ -384,7 +388,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 
-.rightPanel > img {
+.rightPanel>img {
   width: 100%;
   max-width: 500px;
   height: auto;
@@ -848,7 +852,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 .shrunkGrid {
-  padding-right: 450px !important; /* Matches the new panel width */
+  padding-right: 550px !important;
+  /* Matches the new panel width */
   transition: padding 0.3s ease;
 }
 
@@ -858,7 +863,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 450px;
+  width: 550px;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -988,7 +993,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   outline: none;
   font-family: inherit;
   font-size: 0.95rem;
-  min-height: 80px; /* Reduced from 140px for a more compact look */
+  min-height: 80px;
+  /* Reduced from 140px for a more compact look */
   max-height: 300px;
   color: #000000;
   padding: 10px 0;
@@ -997,7 +1003,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   line-height: 1.4;
 }
 
-.chatRichEditor ul, .chatRichEditor ol {
+.chatRichEditor ul,
+.chatRichEditor ol {
   padding-left: 25px !important;
   margin: 5px 0 !important;
 }
@@ -1013,10 +1020,21 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   cursor: text;
 }
 
-.chatRichEditor b { font-weight: bold; }
-.chatRichEditor i { font-style: italic; }
-.chatRichEditor u { text-decoration: underline; }
-.chatRichEditor strike { text-decoration: line-through; }
+.chatRichEditor b {
+  font-weight: bold;
+}
+
+.chatRichEditor i {
+  font-style: italic;
+}
+
+.chatRichEditor u {
+  text-decoration: underline;
+}
+
+.chatRichEditor strike {
+  text-decoration: line-through;
+}
 
 
 .inputToolbar {
@@ -1078,13 +1096,16 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   font-size: 1rem;
   border-radius: 4px;
   cursor: pointer;
-  color: #1a1a1a !important; /* Darker for better visibility */
+  color: #1a1a1a !important;
+  /* Darker for better visibility */
   transition: all 0.2s;
 }
 
 .toolBtn.active {
-  background-color: #0056d6; /* Dark Blue */
-  color: #ffffff !important; /* White text for contrast */
+  background-color: #0056d6;
+  /* Dark Blue */
+  color: #ffffff !important;
+  /* White text for contrast */
 }
 
 .toolBtn:hover {
@@ -1093,7 +1114,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 
 .toolIcon {
   font-size: 1.1rem !important;
-  color: #333 !important; /* Darker icons */
+  color: #333 !important;
+  /* Darker icons */
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -1154,9 +1176,17 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   background-color: #f1f5ff;
 }
 
-.smallSize { font-size: 0.8rem; }
-.mediumSize { font-size: 1rem; }
-.largeSize { font-size: 1.2rem; }
+.smallSize {
+  font-size: 0.8rem;
+}
+
+.mediumSize {
+  font-size: 1rem;
+}
+
+.largeSize {
+  font-size: 1.2rem;
+}
 
 
 .hnItem {
@@ -1174,10 +1204,25 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   background-color: #f1f5ff;
 }
 
-.h1Item { font-size: 1.3rem; font-weight: 800; }
-.h2Item { font-size: 1.15rem; font-weight: 700; }
-.h3Item { font-size: 1.05rem; font-weight: 600; }
-.pItem { font-size: 0.95rem; color: #555; }
+.h1Item {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.h2Item {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.h3Item {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.pItem {
+  font-size: 0.95rem;
+  color: #555;
+}
 
 .activeCheck {
   color: #0b5cff;
@@ -1186,7 +1231,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 
 .bigToolIcon {
   font-size: 1.4rem !important;
- /* Made the icon bigger as requested */
+  /* Made the icon bigger as requested */
   color: #333 !important;
   cursor: pointer;
 }
@@ -1233,26 +1278,32 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem; /* Larger font */
-  font-weight: 800; /* Extra Bold for more color impact */
+  font-size: 1.2rem;
+  /* Larger font */
+  font-weight: 800;
+  /* Extra Bold for more color impact */
   cursor: pointer;
   border-radius: 6px;
   border: 1px solid #eee;
   transition: all 0.2s;
-  background: linear-gradient(145deg, rgba(255,255,255,0.2), rgba(0,0,0,0.05)); /* Shiny top layer */
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.05));
+  /* Shiny top layer */
 }
 
 .colorUnit:hover {
   background-color: #f1f5ff;
   border-color: #0056d6;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .selectedColor {
-  border: 2px solid #0056d6 !important; /* Thick Blue Border */
-  box-shadow: 0 0 10px rgba(0, 86, 214, 0.5) !important; /* Blue Glow */
-  transform: scale(1.1); /* Slightly larger */
+  border: 2px solid #0056d6 !important;
+  /* Thick Blue Border */
+  box-shadow: 0 0 10px rgba(0, 86, 214, 0.5) !important;
+  /* Blue Glow */
+  transform: scale(1.1);
+  /* Slightly larger */
 }
 
 .colorBlock {
@@ -1262,13 +1313,14 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.2s;
-  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%); /* Glossy effect */
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 100%);
+  /* Glossy effect */
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
 }
 
 .colorBlock:hover {
   transform: scale(1.15) rotate(5deg);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   z-index: 2;
 }
 
@@ -1287,7 +1339,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .linkPickerSubMenu {
   position: absolute;
   bottom: calc(100% + 12px);
-  right: 0; /* Changed to grow inwards, preventing the shift */
+  right: 0;
+  /* Changed to grow inwards, preventing the shift */
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
@@ -1302,8 +1355,15 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 @keyframes slideInMenu {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
@@ -1328,7 +1388,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 
 .confirmLinkBtn {
   text-transform: none !important;
-  background-color: #e8ecef !important; /* Exact light gray from SS */
+  background-color: #e8ecef !important;
+  /* Exact light gray from SS */
   color: #747487 !important;
   border-radius: 8px !important;
   padding: 6px 16px !important;
@@ -1380,12 +1441,20 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 .groupedContent {
-  padding-left: 44px; /* Align bubble precisely under the previous one */
+  padding-left: 44px;
+  /* Align bubble precisely under the previous one */
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
@@ -1401,7 +1470,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .floatingChat {
   position: fixed !important;
   z-index: 10000;
-  width: 550px !important;
+  width: 650px !important;
   height: 650px !important;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
@@ -1417,7 +1486,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 .panelHeaderWhite {
-  user-select: none; /* Prevent text selection while dragging */
+  user-select: none;
+  /* Prevent text selection while dragging */
 }
 
 .floatingChat .panelBodyWhite {
@@ -1431,7 +1501,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   height: 32px;
   background-color: #0b5cff;
   color: white;
-  border-radius: 8px; /* Slightly rounded squares like in SS */
+  border-radius: 8px;
+  /* Slightly rounded squares like in SS */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1450,7 +1521,7 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   width: fit-content;
   max-width: 85%;
   word-wrap: break-word;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 /* FORCE KILL all hidden margins from paragraphs/divs inside messages */
@@ -1459,7 +1530,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   padding: 0 !important;
 }
 
-.msgBubbleContent ul, .msgBubbleContent ol {
+.msgBubbleContent ul,
+.msgBubbleContent ol {
   margin: 8px 0 !important;
   padding-left: 20px !important;
   list-style-position: outside !important;
@@ -1478,10 +1550,21 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 }
 
 
-.msgBubbleContent b { font-weight: bold; }
-.msgBubbleContent i { font-style: italic; }
-.msgBubbleContent u { text-decoration: underline; }
-.msgBubbleContent strike { text-decoration: line-through; }
+.msgBubbleContent b {
+  font-weight: bold;
+}
+
+.msgBubbleContent i {
+  font-style: italic;
+}
+
+.msgBubbleContent u {
+  text-decoration: underline;
+}
+
+.msgBubbleContent strike {
+  text-decoration: line-through;
+}
 
 
 
@@ -1492,7 +1575,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
 .meetVideoContainer {
   width: 100vw;
   height: 100vh;
-  background-color: #1a1a1a; /* Dark Cinema Background */
+  background-color: #1a1a1a;
+  /* Dark Cinema Background */
   display: flex;
   flex-direction: column;
   position: relative;
@@ -1534,7 +1618,8 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  margin-bottom: 80px; /* Space for controls */
+  margin-bottom: 80px;
+  /* Space for controls */
 }
 
 .videoGrid {
@@ -1735,4 +1820,3 @@ input:focus, textarea:focus, .MuiInputBase-root.Mui-focused {
   color: #0b5cff !important;
   background: rgba(11, 92, 255, 0.1) !important;
 }
-
