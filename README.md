@@ -82,3 +82,5 @@ Ensure you have a `.env` file in the `backend` directory containing your `MONGO_
 
 Developed with ❤️ by **Amandeep Verma**.
 📍 Saharanpur, India
+
+<!-- update_zoom 1 -->
